@@ -40,6 +40,21 @@ public class WelcomeMessageCommand implements ICommand {
                     reply += "Changed welcome message toggle to " + (toggle ? "on" : "off") + ".";
                 }
 
+                if (channelMapping != null) {
+                    GuildChannel channel = channelMapping.getAsGuildChannel();
+                    if (channel instanceof TextChannel) {
+                        instance.getConfigManager().getGuild().setWelcomeChannel(event.getGuild().getId(), channel.getId());
+
+                        if (!reply.isEmpty())
+                            reply += "\n\n";
+                        reply += "Set welcome channel to " + channel.getAsMention() + ".";
+                    } else {
+                        if (!reply.isEmpty())
+                            reply += "\n\n";
+                        reply += "Did not set channel because it wasn't a text channel.";
+                    }
+                }
+
                 if (messageMapping == null) {
                     if (reply.isEmpty()) {
                         EmbedBuilder embedBuilder = instance.getComponentCreator().createEmbed();
@@ -55,21 +70,6 @@ public class WelcomeMessageCommand implements ICommand {
                     if (!reply.isEmpty())
                         reply += "\n\n";
                     reply += "Set welcome message to:\n" + message;
-                }
-
-                if (channelMapping != null) {
-                    GuildChannel channel = channelMapping.getAsGuildChannel();
-                    if (channel instanceof TextChannel) {
-                        instance.getConfigManager().getGuild().setWelcomeChannel(event.getGuild().getId(), channel.getId());
-
-                        if (!reply.isEmpty())
-                            reply += "\n\n";
-                        reply += "Set welcome channel to " + channel.getAsMention() + ".";
-                    } else {
-                        if (!reply.isEmpty())
-                            reply += "\n\n";
-                        reply += "Did not set channel because it wasn't a text channel.";
-                    }
                 }
 
                 if (shouldReply) {

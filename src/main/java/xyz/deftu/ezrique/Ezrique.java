@@ -15,6 +15,7 @@ import xyz.deftu.ezrique.component.ComponentCreator;
 import xyz.deftu.ezrique.config.ConfigManager;
 import xyz.deftu.ezrique.listeners.GuildAddMessageListener;
 import xyz.deftu.ezrique.listeners.GuildBoostListener;
+import xyz.deftu.ezrique.listeners.GuildJoinLeaveListener;
 import xyz.deftu.ezrique.listeners.ListenerManager;
 
 import java.awt.*;
@@ -58,6 +59,7 @@ public class Ezrique extends Thread {
         listenerManager = new ListenerManager();
         listenerManager.addListener("GUILD_ADD_MESSAGE", new GuildAddMessageListener());
         listenerManager.addListener("GUILD_BOOST", new GuildBoostListener());
+        listenerManager.addListener("GUILD_JOIN_LEAVE", new GuildJoinLeaveListener());
         listenerManager.initialize(api);
 
         componentCreator = new ComponentCreator(this);

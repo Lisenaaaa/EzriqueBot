@@ -144,7 +144,7 @@ public class GuildConfig implements IConfigChild {
 
     public void setLeaveMessageToggle(String id, boolean toggle) {
         ensureExistence(id);
-        retrieveGuild(id).add(LEAVE_MESSAGE, toggle);
+        retrieveGuild(id).add(LEAVE_MESSAGE_TOGGLE, toggle);
         configuration.save();
     }
 

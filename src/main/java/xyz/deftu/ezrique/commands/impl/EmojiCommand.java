@@ -1,5 +1,6 @@
 package xyz.deftu.ezrique.commands.impl;
 
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
@@ -17,7 +18,7 @@ public class EmojiCommand implements ICommand {
 
     private static final String EMOJI_CDN = "https://cdn.discordapp.com/emojis/";
 
-    public CommandData data() {
+    public CommandData getData() {
         return new CommandData("emoji", "Makes changes to emojis in a server.")
                 .addSubcommands(
                         new SubcommandData("add", "Adds emojis through a variety of ways.")
@@ -33,58 +34,68 @@ public class EmojiCommand implements ICommand {
     }
 
     public void execute(Ezrique instance, SlashCommandEvent event) {
-        assert event.getSubcommandName() != null;
-        switch (event.getSubcommandName()) {
-            case "add":
-                handleAdd(instance, event, event.getOption("name").getAsString(), event.getOption("emoji").getAsString());
-                break;
-            case "remove":
-                handleRemove(instance, event, event.getOption("identifier").getAsString());
-                break;
+        if (event.isFromGuild()) {
+            assert event.getSubcommandName() != null;
+            switch (event.getSubcommandName()) {
+                case "add":
+                    handleAdd(instance, event, event.getOption("name").getAsString(), event.getOption("emoji").getAsString());
+                    break;
+                case "remove":
+                    handleRemove(instance, event, event.getOption("identifier").getAsString());
+                    break;
+            }
         }
     }
 
     private void handleAdd(Ezrique instance, SlashCommandEvent event, String name, String emoji) {
-        try {
-            OkHttpClient httpClient = new OkHttpClient();
-            Request.Builder httpRequest = new Request.Builder()
-                    .get();
-            if (emoji.startsWith("<") && emoji.endsWith(">")) {
-                emoji = emoji.substring(emoji.lastIndexOf(":")).replace(":", "").replace(">", "");
-                httpRequest.url(EMOJI_CDN + emoji);
-            } else if (emoji.startsWith("http")) {
-                httpRequest.url(emoji);
-            } else {
-                event.reply("Unable to fetch emoji from parameter given.").setEphemeral(true).queue();
-            }
+        if (event.getMember().hasPermission(Permission.MANAGE_EMOTES)) {
+            try {
+                OkHttpClient httpClient = new OkHttpClient();
+                Request.Builder httpRequest = new Request.Builder()
+                        .get();
+                if (emoji.startsWith("<") && emoji.endsWith(">")) {
+                    emoji = emoji.substring(emoji.lastIndexOf(":")).replace(":", "").replace(">", "");
+                    httpRequest.url(EMOJI_CDN + emoji);
+                } else if (emoji.startsWith("http")) {
+                    httpRequest.url(emoji);
+                } else {
+                    event.reply("Unable to fetch emoji from parameter given.").setEphemeral(true).queue();
+                }
 
-            Guild guild = event.getGuild();
-            Emote emote = guild.createEmote(name, Icon.from(httpClient.newCall(httpRequest.build()).execute().body().byteStream())).complete();
-            event.reply(instance.getComponentCreator().createSuccessEmote().getAsMention() + " Successfully added emoji. - " + emote.getAsMention()).queue();
-        } catch (Exception e) {
-            event.reply(instance.getComponentCreator().createFailEmote().getAsMention() + " Failed to add emoji.").setEphemeral(true).queue();
+                Guild guild = event.getGuild();
+                Emote emote = guild.createEmote(name, Icon.from(httpClient.newCall(httpRequest.build()).execute().body().byteStream())).complete();
+                event.reply(instance.getComponentCreator().createSuccessEmote().getAsMention() + " Successfully added emoji. - " + emote.getAsMention()).queue();
+            } catch (Exception e) {
+                event.reply(instance.getComponentCreator().createFailEmote().getAsMention() + " Failed to add emoji.").setEphemeral(true).queue();
+            }
+        } else {
+            event.reply("Only members with the `Manage emojis and stickers` permission can use this command.").queue();
         }
     }
 
     private void handleRemove(Ezrique instance, SlashCommandEvent event, String identifier) {
-        Guild guild = event.getGuild();
-        Emote emote = null;
-        try {
-            emote = guild.getEmoteById(identifier);
-        } catch (Exception e) {
-            for (Emote found : guild.getEmotesByName(identifier, false)) {
-                if (found.getName().equals(identifier)) {
-                    emote = found;
-                    break;
+        if (event.getMember().hasPermission(Permission.MANAGE_EMOTES)) {
+            Guild guild = event.getGuild();
+            Emote emote = null;
+            try {
+                emote = guild.getEmoteById(identifier);
+            } catch (Exception e) {
+                for (Emote found : guild.getEmotesByName(identifier, false)) {
+                    if (found.getName().equals(identifier)) {
+                        emote = found;
+                        break;
+                    }
                 }
             }
-        }
 
-        if (emote != null) {
-            emote.delete().queue();
-            event.reply(instance.getComponentCreator().createSuccessEmote().getAsMention() + " Successfully removed emoji.").queue();
+            if (emote != null) {
+                emote.delete().queue();
+                event.reply(instance.getComponentCreator().createSuccessEmote().getAsMention() + " Successfully removed emoji.").queue();
+            } else {
+                event.reply(instance.getComponentCreator().createFailEmote().getAsMention() + " Failed to find emoji.").setEphemeral(true).queue();
+            }
         } else {
-            event.reply(instance.getComponentCreator().createFailEmote().getAsMention() + " Failed to find emoji.").setEphemeral(true).queue();
+            event.reply("Only members with the `Manage emojis and stickers` permission can use this command.").queue();
         }
     }
 

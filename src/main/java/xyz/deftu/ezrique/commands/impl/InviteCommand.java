@@ -12,8 +12,12 @@ import xyz.deftu.ezrique.commands.ICommand;
 
 public class InviteCommand implements ICommand {
 
-    public CommandData data() {
+    public CommandData getData() {
         return new CommandData("invite", "Gives you an invite link for the bot.");
+    }
+
+    public String getDescription() {
+        return "Gives you an invite link for the bot.";
     }
 
     public void execute(Ezrique instance, SlashCommandEvent event) {
@@ -22,7 +26,7 @@ public class InviteCommand implements ICommand {
                         .setDescription("You can invite me using the buttons on this message!")
                         .build())
                 .setActionRows(ActionRow.of(
-                        Button.link(event.getJDA().getInviteUrl(Permission.ADMINISTRATOR), "Invite me!")
+                        Button.link(event.getJDA().setRequiredScopes("applications.commands").getInviteUrl(Permission.ADMINISTRATOR), "Invite me!")
                 ))
                 .build()).queue();
     }

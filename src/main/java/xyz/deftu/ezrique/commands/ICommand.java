@@ -9,7 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface ICommand {
-    CommandData data();
+
+    CommandData getData();
 
     default void initialize(Ezrique instance, JDA api) {
     }
@@ -26,4 +27,5 @@ public interface ICommand {
             guildIds.add(id);
         }
     }
+
 }

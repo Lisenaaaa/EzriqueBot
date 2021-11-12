@@ -7,13 +7,11 @@ import net.dv8tion.jda.api.hooks.AnnotatedEventManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import xyz.deftu.ezrique.commands.CommandManager;
-import xyz.deftu.ezrique.commands.impl.EmojiCommand;
-import xyz.deftu.ezrique.commands.impl.InviteCommand;
-import xyz.deftu.ezrique.commands.impl.PingCommand;
-import xyz.deftu.ezrique.commands.impl.RestartCommand;
+import xyz.deftu.ezrique.commands.impl.*;
 import xyz.deftu.ezrique.component.ComponentCreator;
 import xyz.deftu.ezrique.config.ConfigManager;
 import xyz.deftu.ezrique.listeners.GuildAddMessageListener;
+import xyz.deftu.ezrique.listeners.GuildBoostListener;
 import xyz.deftu.ezrique.listeners.ListenerManager;
 
 import java.awt.*;
@@ -33,7 +31,9 @@ public class Ezrique extends Thread {
         configManager = new ConfigManager();
 
         commandManager = new CommandManager();
+        commandManager.addCommand(new BoostMessageCommand());
         commandManager.addCommand(new EmojiCommand());
+        commandManager.addCommand(new HelpCommand());
         commandManager.addCommand(new InviteCommand());
         commandManager.addCommand(new PingCommand());
         commandManager.addCommand(new RestartCommand());
@@ -49,6 +49,7 @@ public class Ezrique extends Thread {
 
         listenerManager = new ListenerManager();
         listenerManager.addListener("GUILD_ADD_MESSAGE", new GuildAddMessageListener());
+        listenerManager.addListener("GUILD_BOOST", new GuildBoostListener());
         listenerManager.initialize(api);
 
         componentCreator = new ComponentCreator(this);

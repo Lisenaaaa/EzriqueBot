@@ -8,8 +8,12 @@ import xyz.deftu.ezrique.commands.ICommand;
 
 public class RestartCommand implements ICommand {
 
-    public CommandData data() {
+    public CommandData getData() {
         return new CommandData("restart", "Restarts the bot. [OWNER ONLY]");
+    }
+
+    public String getDescription() {
+        return "Restarts the bot. [OWNER ONLY]";
     }
 
     public void execute(Ezrique instance, SlashCommandEvent event) {

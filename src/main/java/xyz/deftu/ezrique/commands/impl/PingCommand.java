@@ -11,7 +11,7 @@ import xyz.qalcyo.mango.Objects;
 
 public class PingCommand implements ICommand {
 
-    public CommandData data() {
+    public CommandData getData() {
         return new CommandData("ping", "Provides the bot's latency information.");
     }
 

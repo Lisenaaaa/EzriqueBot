@@ -4,6 +4,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.hooks.AnnotatedEventManager;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import xyz.deftu.ezrique.commands.CommandManager;
@@ -35,13 +38,18 @@ public class Ezrique extends Thread {
         commandManager.addCommand(new EmojiCommand());
         commandManager.addCommand(new HelpCommand());
         commandManager.addCommand(new InviteCommand());
+        commandManager.addCommand(new LeaveMessageCommand());
         commandManager.addCommand(new PingCommand());
         commandManager.addCommand(new RestartCommand());
+        commandManager.addCommand(new WelcomeMessageCommand());
 
         api = JDABuilder.createDefault(configManager.getBot().getToken())
                 .setEventManager(new AnnotatedEventManager())
                 .addEventListeners(commandManager)
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
+                .enableIntents(GatewayIntent.GUILD_MEMBERS)
+                .setChunkingFilter(ChunkingFilter.ALL)
+                .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .build();
         api.awaitReady();
         logger.info("Connected as {}!", api.getSelfUser().getAsTag());

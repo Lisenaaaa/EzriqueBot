@@ -9,6 +9,15 @@ import java.util.List;
 
 public class GuildConfig implements IConfigChild {
 
+    private static final String BOOST_MESSAGE = "boost_message";
+    private static final String BOOST_MESSAGE_TOGGLE = "boost_message_toggle";
+    private static final String WELCOME_CHANNEL = "welcome_channel";
+    private static final String WELCOME_MESSAGE = "welcome_message";
+    private static final String WELCOME_MESSAGE_TOGGLE = "welcome_message_toggle";
+    private static final String LEAVE_CHANNEL = "leave_channel";
+    private static final String LEAVE_MESSAGE = "leave_message";
+    private static final String LEAVE_MESSAGE_TOGGLE = "leave_message_toggle";
+
     private Configuration configuration;
     private Subconfiguration self;
 
@@ -32,11 +41,18 @@ public class GuildConfig implements IConfigChild {
 
         Subconfiguration guild = retrieveGuild(id);
 
-        if (!guild.hasKey("boost_message_toggle")) {
-            guild.add("boost_message_toggle", false);
-            System.out.println(guild);
-            System.out.println(self);
-            System.out.println(configuration);
+        if (!guild.hasKey(BOOST_MESSAGE_TOGGLE)) {
+            guild.add(BOOST_MESSAGE_TOGGLE, false);
+            updated = true;
+        }
+
+        if (!guild.hasKey(WELCOME_MESSAGE_TOGGLE)) {
+            guild.add(WELCOME_MESSAGE_TOGGLE, false);
+            updated = true;
+        }
+
+        if (!guild.hasKey("leave_message_toggle")) {
+            guild.add("leave_message_toggle", false);
             updated = true;
         }
 
@@ -47,23 +63,99 @@ public class GuildConfig implements IConfigChild {
 
     public boolean hasBoostMessage(String id) {
         ensureExistence(id);
-        return self.hasKey(id) && retrieveGuild(id).hasKey("boost_message_toggle") && retrieveGuild(id).getAsBoolean("boost_message_toggle") && retrieveGuild(id).hasKey("boost_message");
+        return self.hasKey(id) && retrieveGuild(id).hasKey(BOOST_MESSAGE_TOGGLE) && retrieveGuild(id).getAsBoolean(BOOST_MESSAGE_TOGGLE) && retrieveGuild(id).hasKey(BOOST_MESSAGE);
     }
 
     public void setBoostMessageToggle(String id, boolean toggle) {
         ensureExistence(id);
-        retrieveGuild(id).add("boost_message_toggle", toggle);
+        retrieveGuild(id).add(BOOST_MESSAGE_TOGGLE, toggle);
         configuration.save();
     }
 
     public String getBoostMessage(String id) {
         ensureExistence(id);
-        return retrieveGuild(id).getAsString("boost_message");
+        return retrieveGuild(id).getAsString(BOOST_MESSAGE);
     }
 
     public void setBoostMessage(String id, String value) {
         ensureExistence(id);
         retrieveGuild(id).add("boost_message", value);
+        configuration.save();
+    }
+
+    public boolean hasWelcomeChannel(String id) {
+        ensureExistence(id);
+        return self.hasKey(id) && retrieveGuild(id).hasKey(WELCOME_MESSAGE_TOGGLE) && retrieveGuild(id).getAsBoolean(WELCOME_MESSAGE_TOGGLE) && retrieveGuild(id).hasKey(WELCOME_CHANNEL);
+    }
+
+    public String getWelcomeChannel(String id) {
+        ensureExistence(id);
+        return retrieveGuild(id).getAsString(WELCOME_CHANNEL);
+    }
+
+    public void setWelcomeChannel(String id, String value) {
+        ensureExistence(id);
+        retrieveGuild(id).add(WELCOME_CHANNEL, value);
+        configuration.save();
+    }
+
+    public boolean hasWelcomeMessage(String id) {
+        ensureExistence(id);
+        return self.hasKey(id) && retrieveGuild(id).hasKey(WELCOME_MESSAGE_TOGGLE) && retrieveGuild(id).getAsBoolean(WELCOME_MESSAGE_TOGGLE) && retrieveGuild(id).hasKey(WELCOME_MESSAGE);
+    }
+
+    public void setWelcomeMessageToggle(String id, boolean toggle) {
+        ensureExistence(id);
+        retrieveGuild(id).add(WELCOME_MESSAGE_TOGGLE, toggle);
+        configuration.save();
+    }
+
+    public String getWelcomeMessage(String id) {
+        ensureExistence(id);
+        return retrieveGuild(id).getAsString(WELCOME_MESSAGE);
+    }
+
+    public void setWelcomeMessage(String id, String value) {
+        ensureExistence(id);
+        retrieveGuild(id).add(WELCOME_MESSAGE, value);
+        configuration.save();
+    }
+
+    public boolean hasLeaveChannel(String id) {
+        ensureExistence(id);
+        return self.hasKey(id) && retrieveGuild(id).hasKey(LEAVE_MESSAGE_TOGGLE) && retrieveGuild(id).getAsBoolean(LEAVE_MESSAGE_TOGGLE) && retrieveGuild(id).hasKey(LEAVE_CHANNEL);
+    }
+
+    public String getLeaveChannel(String id) {
+        ensureExistence(id);
+        return retrieveGuild(id).getAsString(LEAVE_CHANNEL);
+    }
+
+    public void setLeaveChannel(String id, String value) {
+        ensureExistence(id);
+        retrieveGuild(id).add(LEAVE_CHANNEL, value);
+        configuration.save();
+    }
+
+    public boolean hasLeaveMessage(String id) {
+        ensureExistence(id);
+        return self.hasKey(id) && retrieveGuild(id).hasKey(LEAVE_MESSAGE_TOGGLE) && retrieveGuild(id).getAsBoolean(LEAVE_MESSAGE_TOGGLE) && retrieveGuild(id).hasKey(LEAVE_MESSAGE);
+    }
+
+    public void setLeaveMessageToggle(String id, boolean toggle) {
+        ensureExistence(id);
+        retrieveGuild(id).add(LEAVE_MESSAGE, toggle);
+        configuration.save();
+    }
+
+    public String getLeaveMessage(String id) {
+        ensureExistence(id);
+        return retrieveGuild(id).getAsString(LEAVE_MESSAGE);
+    }
+
+    public void setLeaveMessage(String id, String value) {
+        ensureExistence(id);
+        retrieveGuild(id).add(LEAVE_MESSAGE, value);
         configuration.save();
     }
 

@@ -5,6 +5,8 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.Button;
 import xyz.deftu.ezrique.Ezrique;
 import xyz.deftu.ezrique.commands.CommandManager;
 import xyz.deftu.ezrique.commands.ICommand;
@@ -43,6 +45,10 @@ public class HelpCommand implements ICommand {
                 embedBuilder.appendDescription("\n");
             }
         }
+
+        messageBuilder.setActionRows(ActionRow.of(
+                Button.link(instance.getConfigManager().getBot().getSupportInvite(), "Support server")
+        ));
 
         event.reply(messageBuilder.setEmbeds(embedBuilder.build()).build()).queue();
     }

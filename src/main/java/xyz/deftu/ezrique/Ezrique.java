@@ -11,10 +11,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import xyz.deftu.ezrique.commands.CommandManager;
 import xyz.deftu.ezrique.commands.impl.*;
+import xyz.deftu.ezrique.commands.impl.exclusive.qalcyo.QalcyoTicketsCommand;
+import xyz.deftu.ezrique.commands.impl.exclusive.testingserver.TestingServerCommand;
 import xyz.deftu.ezrique.commands.impl.tickets.TicketCommand;
 import xyz.deftu.ezrique.component.ComponentCreator;
 import xyz.deftu.ezrique.config.ConfigManager;
 import xyz.deftu.ezrique.listeners.*;
+import xyz.deftu.ezrique.listeners.exclusive.qalcyo.QalcyoTicketsListener;
 
 import java.awt.*;
 
@@ -43,6 +46,9 @@ public class Ezrique extends Thread {
         commandManager.addCommand(new TicketCommand());
         commandManager.addCommand(new WelcomeMessageCommand());
 
+        commandManager.addCommand(new QalcyoTicketsCommand());
+        commandManager.addCommand(new TestingServerCommand());
+
         api = JDABuilder.createDefault(configManager.getBot().getToken())
                 .setEventManager(new AnnotatedEventManager())
                 .addEventListeners(commandManager)
@@ -60,6 +66,8 @@ public class Ezrique extends Thread {
         listenerManager.addListener("GUILD_BOOST", new GuildBoostListener());
         listenerManager.addListener("GUILD_JOIN_LEAVE", new GuildJoinLeaveListener());
         listenerManager.addListener("TICKET_BUTTON", new TicketButtonListener());
+
+        listenerManager.addListener("QALCYO_TICKETS", new QalcyoTicketsListener());
         listenerManager.initialize(api);
 
         componentCreator = new ComponentCreator(this);

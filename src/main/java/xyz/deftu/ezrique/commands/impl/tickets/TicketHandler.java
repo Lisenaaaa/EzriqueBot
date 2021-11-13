@@ -87,8 +87,8 @@ public class TicketHandler {
             closeConfirmations.put(channel.getIdLong(), new ImmutablePair<>(reason, member));
             reply.setContent("Are you sure you want to close this ticket?" + (reason == null ? "" : "\n**Reason:** " + reason))
                     .addActionRow(
-                            Button.danger("ticket|close|confirmation|accept|" + channel.getId(), "Confirm"),
-                            Button.success("ticket|close|confirmation|deny|" + channel.getId(), "Deny")
+                            Button.success("ticket|close|confirmation|accept|" + channel.getId(), "Confirm"),
+                            Button.danger("ticket|close|confirmation|deny|" + channel.getId(), "Deny")
                     )
                     .queue();
         }

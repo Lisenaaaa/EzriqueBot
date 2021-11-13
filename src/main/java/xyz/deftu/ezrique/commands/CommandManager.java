@@ -29,7 +29,7 @@ public class CommandManager {
             command.initialize(Ezrique.getInstance(), api);
 
             List<Long> guildIds = command.getGuildIds();
-            if (!guildIds.isEmpty()) {
+            if (guildIds != null && !guildIds.isEmpty()) {
                 for (Long guildId : guildIds) {
                     if (guildId != null) {
                         Guild guild = api.getGuildById(guildId);

@@ -5,7 +5,6 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import xyz.deftu.ezrique.Ezrique;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public interface ICommand {
@@ -18,14 +17,11 @@ public interface ICommand {
     void execute(Ezrique instance, SlashCommandEvent event);
 
     default List<Long> getGuildIds() {
-        return new ArrayList<>();
+        return null;
     }
 
     default void addGuildId(long id) {
-        List<Long> guildIds = getGuildIds();
-        if (guildIds != null && !guildIds.contains(id)) {
-            guildIds.add(id);
-        }
+        throw new UnsupportedOperationException();
     }
 
 }

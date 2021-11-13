@@ -13,6 +13,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import xyz.deftu.ezrique.Ezrique;
 import xyz.deftu.ezrique.commands.ICommand;
+import xyz.deftu.ezrique.util.TextHelper;
 
 public class EmojiCommand implements ICommand {
 
@@ -59,17 +60,18 @@ public class EmojiCommand implements ICommand {
                 } else if (emoji.startsWith("http")) {
                     httpRequest.url(emoji);
                 } else {
-                    event.reply("Unable to fetch emoji from parameter given.").setEphemeral(true).queue();
+                    event.reply(TextHelper.buildFailure("Unable to fetch emoji from parameter given.")).setEphemeral(true).queue();
+                    return;
                 }
 
                 Guild guild = event.getGuild();
                 Emote emote = guild.createEmote(name, Icon.from(httpClient.newCall(httpRequest.build()).execute().body().byteStream())).complete();
-                event.reply(instance.getComponentCreator().createSuccessEmote().getAsMention() + " Successfully added emoji. - " + emote.getAsMention()).queue();
+                event.reply(TextHelper.buildSuccess("Successfully added emoji. - " + emote.getAsMention())).queue();
             } catch (Exception e) {
-                event.reply(instance.getComponentCreator().createFailEmote().getAsMention() + " Failed to add emoji.").setEphemeral(true).queue();
+                event.reply(TextHelper.buildFailure("Failed to add emoji.")).setEphemeral(true).queue();
             }
         } else {
-            event.reply("Only members with the `Manage emojis and stickers` permission can use this command.").queue();
+            event.reply(TextHelper.buildFailure("Only members with the `Manage emojis and stickers` permission can use this command.")).queue();
         }
     }
 
@@ -77,6 +79,14 @@ public class EmojiCommand implements ICommand {
         if (event.getMember().hasPermission(Permission.MANAGE_EMOTES)) {
             Guild guild = event.getGuild();
             Emote emote = null;
+            if (identifier.startsWith("<") && identifier.endsWith(">")) {
+                try {
+                    identifier = identifier.substring(identifier.lastIndexOf(":")).replace(":", "").replace(">", "");
+                } catch (Exception e) {
+                    event.reply(TextHelper.buildFailure("Failed to find emoji.")).setEphemeral(true).queue();
+                }
+            }
+
             try {
                 emote = guild.getEmoteById(identifier);
             } catch (Exception e) {
@@ -90,12 +100,12 @@ public class EmojiCommand implements ICommand {
 
             if (emote != null) {
                 emote.delete().queue();
-                event.reply(instance.getComponentCreator().createSuccessEmote().getAsMention() + " Successfully removed emoji.").queue();
+                event.reply(TextHelper.buildSuccess("Successfully removed emoji.")).queue();
             } else {
-                event.reply(instance.getComponentCreator().createFailEmote().getAsMention() + " Failed to find emoji.").setEphemeral(true).queue();
+                event.reply(TextHelper.buildFailure("Failed to find emoji.")).setEphemeral(true).queue();
             }
         } else {
-            event.reply("Only members with the `Manage emojis and stickers` permission can use this command.").queue();
+            event.reply(TextHelper.buildFailure("Only members with the `Manage emojis and stickers` permission can use this command.")).queue();
         }
     }
 

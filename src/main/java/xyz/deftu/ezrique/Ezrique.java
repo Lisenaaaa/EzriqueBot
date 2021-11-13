@@ -11,12 +11,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import xyz.deftu.ezrique.commands.CommandManager;
 import xyz.deftu.ezrique.commands.impl.*;
+import xyz.deftu.ezrique.commands.impl.tickets.TicketCommand;
 import xyz.deftu.ezrique.component.ComponentCreator;
 import xyz.deftu.ezrique.config.ConfigManager;
-import xyz.deftu.ezrique.listeners.GuildAddMessageListener;
-import xyz.deftu.ezrique.listeners.GuildBoostListener;
-import xyz.deftu.ezrique.listeners.GuildJoinLeaveListener;
-import xyz.deftu.ezrique.listeners.ListenerManager;
+import xyz.deftu.ezrique.listeners.*;
 
 import java.awt.*;
 
@@ -42,6 +40,7 @@ public class Ezrique extends Thread {
         commandManager.addCommand(new LeaveMessageCommand());
         commandManager.addCommand(new PingCommand());
         commandManager.addCommand(new RestartCommand());
+        commandManager.addCommand(new TicketCommand());
         commandManager.addCommand(new WelcomeMessageCommand());
 
         api = JDABuilder.createDefault(configManager.getBot().getToken())
@@ -60,6 +59,7 @@ public class Ezrique extends Thread {
         listenerManager.addListener("GUILD_ADD_MESSAGE", new GuildAddMessageListener());
         listenerManager.addListener("GUILD_BOOST", new GuildBoostListener());
         listenerManager.addListener("GUILD_JOIN_LEAVE", new GuildJoinLeaveListener());
+        listenerManager.addListener("TICKET_BUTTON", new TicketButtonListener());
         listenerManager.initialize(api);
 
         componentCreator = new ComponentCreator(this);

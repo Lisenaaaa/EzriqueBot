@@ -18,6 +18,11 @@ public class GuildConfig implements IConfigChild {
     private static final String LEAVE_MESSAGE = "leave_message";
     private static final String LEAVE_MESSAGE_TOGGLE = "leave_message_toggle";
 
+    private static final String TICKET_TOGGLE = "ticket_toggle";
+    private static final String TICKET_NAME = "ticket_name";
+    private static final String TICKET_ROLE = "ticket_role";
+    private static final String TICKET_CATEGORY = "ticket_category";
+
     private Configuration configuration;
     private Subconfiguration self;
 
@@ -51,8 +56,18 @@ public class GuildConfig implements IConfigChild {
             updated = true;
         }
 
-        if (!guild.hasKey("leave_message_toggle")) {
-            guild.add("leave_message_toggle", false);
+        if (!guild.hasKey(LEAVE_MESSAGE_TOGGLE)) {
+            guild.add(LEAVE_MESSAGE_TOGGLE, false);
+            updated = true;
+        }
+
+        if (!guild.hasKey(TICKET_NAME)) {
+            guild.add(TICKET_NAME, "{name}-{uuid}");
+            updated = true;
+        }
+
+        if (!guild.hasKey(TICKET_TOGGLE)) {
+            guild.add(TICKET_TOGGLE, false);
             updated = true;
         }
 
@@ -156,6 +171,65 @@ public class GuildConfig implements IConfigChild {
     public void setLeaveMessage(String id, String value) {
         ensureExistence(id);
         retrieveGuild(id).add(LEAVE_MESSAGE, value);
+        configuration.save();
+    }
+
+    public boolean hasTickets(String id) {
+        ensureExistence(id);
+        return self.hasKey(id) && retrieveGuild(id).hasKey(TICKET_TOGGLE) && retrieveGuild(id).getAsBoolean(TICKET_TOGGLE);
+    }
+
+    public void setTicketToggle(String id, boolean value) {
+        ensureExistence(id);
+        retrieveGuild(id).add(TICKET_TOGGLE, value);
+        configuration.save();
+    }
+
+    public boolean hasTicketName(String id) {
+        ensureExistence(id);
+        return self.hasKey(id) && retrieveGuild(id).hasKey(TICKET_NAME);
+    }
+
+    public String getTicketName(String id) {
+        ensureExistence(id);
+        return retrieveGuild(id).getAsString(TICKET_NAME);
+    }
+
+    public void setTicketName(String id, String value) {
+        ensureExistence(id);
+        retrieveGuild(id).add(TICKET_NAME, value);
+        configuration.save();
+    }
+
+    public boolean hasTicketRole(String id) {
+        ensureExistence(id);
+        return self.hasKey(id) && retrieveGuild(id).hasKey(TICKET_ROLE);
+    }
+
+    public String getTicketRole(String id) {
+        ensureExistence(id);
+        return retrieveGuild(id).getAsString(TICKET_ROLE);
+    }
+
+    public void setTicketRole(String id, String value) {
+        ensureExistence(id);
+        retrieveGuild(id).add(TICKET_ROLE, value);
+        configuration.save();
+    }
+
+    public boolean hasTicketCategory(String id) {
+        ensureExistence(id);
+        return self.hasKey(id) && retrieveGuild(id).hasKey(TICKET_CATEGORY);
+    }
+
+    public String getTicketCategory(String id) {
+        ensureExistence(id);
+        return retrieveGuild(id).getAsString(TICKET_CATEGORY);
+    }
+
+    public void setTicketCategory(String id, String value) {
+        ensureExistence(id);
+        retrieveGuild(id).add(TICKET_CATEGORY, value);
         configuration.save();
     }
 

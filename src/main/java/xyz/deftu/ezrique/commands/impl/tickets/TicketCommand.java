@@ -1,5 +1,7 @@
 package xyz.deftu.ezrique.commands.impl.tickets;
 
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -11,6 +13,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import xyz.deftu.ezrique.Ezrique;
 import xyz.deftu.ezrique.commands.ICommand;
+import xyz.deftu.ezrique.util.IdentificationHelper;
 import xyz.deftu.ezrique.util.TextHelper;
 
 public class TicketCommand implements ICommand {
@@ -100,8 +103,23 @@ public class TicketCommand implements ICommand {
 
     private void handleName(Ezrique instance, SlashCommandEvent event, String name) {
         if (event.getMember().hasPermission(Permission.MANAGE_SERVER)) {
-            instance.getConfigManager().getGuild().setTicketName(event.getGuild().getId(), name);
-            event.reply(TextHelper.buildSuccess("Successfully set ticket name.")).queue();
+            if (name == null) {
+                StringBuilder variableBuilder = new StringBuilder();
+                variableBuilder.append("{name}: ").append(event.getMember().getUser().getName()).append("\n");
+                variableBuilder.append("{id}: ").append(event.getMember().getId()).append("\n");
+                variableBuilder.append("{uuid}: ").append(IdentificationHelper.generateUuid());
+
+                EmbedBuilder embedBuilder = instance.getComponentCreator().createEmbed();
+                if (instance.getConfigManager().getGuild().hasTicketName(event.getGuild().getId()))
+                    embedBuilder.addField("Current name", instance.getConfigManager().getGuild().getTicketName(event.getGuild().getId()), false);
+                embedBuilder.addField("Variables", variableBuilder.toString(), false);
+                event.reply(new MessageBuilder()
+                        .setEmbeds(embedBuilder.build())
+                        .build()).setEphemeral(true).queue();
+            } else {
+                instance.getConfigManager().getGuild().setTicketName(event.getGuild().getId(), name);
+                event.reply(TextHelper.buildSuccess("Successfully set ticket name.")).queue();
+            }
         } else {
             event.reply(TextHelper.buildFailure("Only members with the `Manage server` permission can use this command.")).queue();
         }

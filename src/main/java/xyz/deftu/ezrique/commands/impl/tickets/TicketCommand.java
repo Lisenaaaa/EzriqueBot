@@ -128,7 +128,7 @@ public class TicketCommand implements ICommand {
     private void handleRole(Ezrique instance, SlashCommandEvent event, Role role) {
         if (event.getMember().hasPermission(Permission.MANAGE_ROLES)) {
             instance.getConfigManager().getGuild().setTicketRole(event.getGuild().getId(), role.getId());
-            event.reply(TextHelper.buildSuccess("Successfully set ticket name.")).queue();
+            event.reply(TextHelper.buildSuccess("Successfully set ticket role.")).queue();
         } else {
             event.reply(TextHelper.buildFailure("Only members with the `Manage roles` permission can use this command.")).queue();
         }

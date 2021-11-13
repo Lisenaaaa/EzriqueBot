@@ -1,10 +1,12 @@
 package xyz.deftu.ezrique;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.hooks.AnnotatedEventManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.apache.logging.log4j.LogManager;
@@ -29,7 +31,7 @@ public class Ezrique extends Thread {
     private OffsetDateTime startTime;
     private ConfigManager configManager;
     private CommandManager commandManager;
-    private JDA api;
+    private ShardManager api;
     private ListenerManager listenerManager;
     private ComponentCreator componentCreator;
 
@@ -40,34 +42,33 @@ public class Ezrique extends Thread {
         configManager = new ConfigManager();
 
         commandManager = new CommandManager();
-        commandManager.addCommand(new BoostMessageCommand());
         commandManager.addCommand(new EmojiCommand());
         commandManager.addCommand(new HelpCommand());
         commandManager.addCommand(new InviteCommand());
         commandManager.addCommand(new LeaveMessageCommand());
+        commandManager.addCommand(new NukeCommand());
+        commandManager.addCommand(new QalcyoCommand());
         commandManager.addCommand(new RestartCommand());
         commandManager.addCommand(new StatisticsCommand());
+        commandManager.addCommand(new SupportCommand());
         commandManager.addCommand(new TicketCommand());
         commandManager.addCommand(new WelcomeMessageCommand());
 
         commandManager.addCommand(new QalcyoTicketsCommand());
         commandManager.addCommand(new TestingServerCommand());
 
-        api = JDABuilder.createDefault(configManager.getBot().getToken())
-                .setEventManager(new AnnotatedEventManager())
+        api = DefaultShardManagerBuilder.createDefault(configManager.getBot().getToken())
+                .setEventManagerProvider(id -> new AnnotatedEventManager())
                 .addEventListeners(commandManager)
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
                 .setChunkingFilter(ChunkingFilter.ALL)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .build();
-        api.awaitReady();
-        logger.info("Connected as {}!", api.getSelfUser().getAsTag());
         commandManager.initialize(api);
 
         listenerManager = new ListenerManager();
         listenerManager.addListener("GUILD_ADD_MESSAGE", new GuildAddMessageListener());
-        listenerManager.addListener("GUILD_BOOST", new GuildBoostListener());
         listenerManager.addListener("GUILD_JOIN_LEAVE", new GuildJoinLeaveListener());
         listenerManager.addListener("TICKET_BUTTON", new TicketButtonListener());
 
@@ -75,6 +76,10 @@ public class Ezrique extends Thread {
         listenerManager.initialize(api);
 
         componentCreator = new ComponentCreator(this);
+
+        for (JDA shard : api.getShards()) {
+            shard.getPresence().setActivity(Activity.playing(String.format("with Deftu's mind | %s/%s", shard.getShardInfo().getShardId(), shard.getShardInfo().getShardTotal())));
+        }
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::kill, "Ezrique shutdown"));
     }
@@ -85,7 +90,7 @@ public class Ezrique extends Thread {
     }
 
     public boolean isBeta() {
-        return api.getSelfUser().getName().toLowerCase().endsWith("beta");
+        return api.getShardById(0).getSelfUser().getName().toLowerCase().endsWith("beta");
     }
 
     public Color getPrimaryColour() {
@@ -108,7 +113,7 @@ public class Ezrique extends Thread {
         return commandManager;
     }
 
-    public JDA getApi() {
+    public ShardManager getApi() {
         return api;
     }
 

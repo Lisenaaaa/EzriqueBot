@@ -9,8 +9,6 @@ import java.util.List;
 
 public class GuildConfig implements IConfigChild {
 
-    private static final String BOOST_MESSAGE = "boost_message";
-    private static final String BOOST_MESSAGE_TOGGLE = "boost_message_toggle";
     private static final String WELCOME_CHANNEL = "welcome_channel";
     private static final String WELCOME_MESSAGE = "welcome_message";
     private static final String WELCOME_MESSAGE_TOGGLE = "welcome_message_toggle";
@@ -46,11 +44,6 @@ public class GuildConfig implements IConfigChild {
 
         Subconfiguration guild = retrieveGuild(id);
 
-        if (!guild.hasKey(BOOST_MESSAGE_TOGGLE)) {
-            guild.add(BOOST_MESSAGE_TOGGLE, false);
-            updated = true;
-        }
-
         if (!guild.hasKey(WELCOME_MESSAGE_TOGGLE)) {
             guild.add(WELCOME_MESSAGE_TOGGLE, false);
             updated = true;
@@ -74,28 +67,6 @@ public class GuildConfig implements IConfigChild {
         if (updated) {
             configuration.save();
         }
-    }
-
-    public boolean hasBoostMessage(String id) {
-        ensureExistence(id);
-        return self.hasKey(id) && retrieveGuild(id).hasKey(BOOST_MESSAGE_TOGGLE) && retrieveGuild(id).getAsBoolean(BOOST_MESSAGE_TOGGLE) && retrieveGuild(id).hasKey(BOOST_MESSAGE);
-    }
-
-    public void setBoostMessageToggle(String id, boolean toggle) {
-        ensureExistence(id);
-        retrieveGuild(id).add(BOOST_MESSAGE_TOGGLE, toggle);
-        configuration.save();
-    }
-
-    public String getBoostMessage(String id) {
-        ensureExistence(id);
-        return retrieveGuild(id).getAsString(BOOST_MESSAGE);
-    }
-
-    public void setBoostMessage(String id, String value) {
-        ensureExistence(id);
-        retrieveGuild(id).add("boost_message", value);
-        configuration.save();
     }
 
     public boolean hasWelcomeChannel(String id) {

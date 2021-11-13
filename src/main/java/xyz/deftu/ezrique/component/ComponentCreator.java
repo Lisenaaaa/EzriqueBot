@@ -3,6 +3,7 @@ package xyz.deftu.ezrique.component;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Emote;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import xyz.deftu.ezrique.Ezrique;
@@ -11,7 +12,7 @@ public class ComponentCreator {
 
     private final Ezrique ezrique;
     private final Logger logger;
-    private final JDA api;
+    private final ShardManager api;
 
     public ComponentCreator(Ezrique ezrique) {
         this.ezrique = ezrique;
@@ -23,7 +24,7 @@ public class ComponentCreator {
     public EmbedBuilder createEmbed() {
         EmbedBuilder value = new EmbedBuilder();
         value.setColor(ezrique.getPrimaryColour());
-        value.setFooter("Join my server for support! " + ezrique.getConfigManager().getBot().getSupportInvite(), ezrique.getApi().getSelfUser().getAvatarUrl());
+        value.setFooter("Join my server for support! " + ezrique.getConfigManager().getBot().getSupportInvite(), ezrique.getApi().getShardById(0).getSelfUser().getAvatarUrl());
         return value;
     }
 

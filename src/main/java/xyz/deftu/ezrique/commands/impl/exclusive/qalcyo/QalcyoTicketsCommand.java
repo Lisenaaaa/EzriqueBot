@@ -1,13 +1,13 @@
 package xyz.deftu.ezrique.commands.impl.exclusive.qalcyo;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import xyz.deftu.ezrique.Ezrique;
 import xyz.deftu.ezrique.commands.CommandImpl;
 import xyz.deftu.ezrique.util.EmojiHelper;
@@ -19,7 +19,7 @@ public class QalcyoTicketsCommand extends CommandImpl {
         return new CommandData("qalcyotickets", "Creates the Qalcyo exclusive tickets menu.");
     }
 
-    public void initialize(Ezrique instance, JDA api) {
+    public void initialize(Ezrique instance, ShardManager api) {
         addGuildId(884212442664697937L);
     }
 

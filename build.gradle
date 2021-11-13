@@ -1,10 +1,18 @@
 plugins {
     id 'com.github.johnrengelman.shadow' version '6.1.0'
+    id 'com.github.gmazzo.buildconfig' version '3.0.1'
     id 'java'
 }
 
 group = bot_group
 version = bot_version
+
+buildConfig {
+    className('EzriqueInfo')
+    packageName('xyz.deftu.ezrique')
+
+    buildConfigField('String', 'VERSION', "\"${bot_version}\"")
+}
 
 repositories {
     mavenCentral()

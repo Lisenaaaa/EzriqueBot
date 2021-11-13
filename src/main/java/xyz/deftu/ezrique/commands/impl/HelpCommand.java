@@ -19,16 +19,17 @@ public class HelpCommand implements ICommand {
         return new CommandData("help", "Lists all commands currently in the bot.");
     }
 
-    public String getDescription() {
-        return "Lists all commands currently in the bot.";
-    }
-
     public void execute(Ezrique instance, SlashCommandEvent event) {
         MessageBuilder messageBuilder = new MessageBuilder();
         EmbedBuilder embedBuilder = instance.getComponentCreator().createEmbed();
 
         CommandManager commandManager = instance.getCommandManager();
         for (ICommand command : commandManager.getCommands()) {
+            List<Long> guildIds = command.getGuildIds();
+            if (guildIds != null && !guildIds.isEmpty()) {
+                continue;
+            }
+
             List<SubcommandData> subcommands = command.getData().getSubcommands();
             if (subcommands.isEmpty()) {
                 appendCommand(embedBuilder, command.getData().getName(), command.getData().getDescription());

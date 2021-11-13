@@ -32,7 +32,6 @@ public class TicketButtonListener extends ListenerBase {
                         PrivateChannel privateChannel = member.getUser().openPrivateChannel().complete();
                         privateChannel.sendMessage("Your ticket in " + event.getGuild().getName() + " (" + event.getTextChannel().getName() + ") was deleted." + (reason == null ? "" : "\n**Reason:** " + reason)).queue(message -> {}, throwable -> {});
                     } catch (Exception ignored) {
-                        ignored.printStackTrace();
                     }
                 }
 

@@ -12,10 +12,6 @@ public class RestartCommand implements ICommand {
         return new CommandData("restart", "Restarts the bot. [OWNER ONLY]");
     }
 
-    public String getDescription() {
-        return "Restarts the bot. [OWNER ONLY]";
-    }
-
     public void execute(Ezrique instance, SlashCommandEvent event) {
         if (event.getUser().getId().equals(instance.getConfigManager().getBot().getOwnerId())) {
             event.deferReply().complete().deleteOriginal().queue();

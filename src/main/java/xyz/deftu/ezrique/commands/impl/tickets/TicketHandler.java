@@ -11,8 +11,6 @@ import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 import xyz.deftu.ezrique.Ezrique;
 import xyz.deftu.ezrique.util.IdentificationHelper;
 import xyz.deftu.ezrique.util.TextHelper;
-import xyz.qalcyo.mango.collections.Pair;
-import xyz.qalcyo.mango.collections.impl.ImmutablePair;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +18,7 @@ import java.util.Map;
 public class TicketHandler {
 
     private static final TicketHandler INSTANCE = new TicketHandler();
-    private final Map<Long, Pair<String, Member>> closeConfirmations = new HashMap<>();
+    private final Map<Long, String> closeConfirmations = new HashMap<>();
 
     public void open(Guild guild, Member member, String reason, ReplyAction reply) {
         Ezrique instance = Ezrique.getInstance();
@@ -68,7 +66,7 @@ public class TicketHandler {
                 embed.addField("User", String.format("**Created:** <t:%s:f>\n**Joined:** <t:%s:f>", member.getTimeCreated().toEpochSecond(), member.getTimeJoined().toEpochSecond()), false);
 
                 channel.sendMessage(messageBuilder.setEmbeds(embed.build()).setActionRows(ActionRow.of(Button.danger("ticket|close|" + channel.getId(), "Close"))).build()).queue();
-                reply.setContent(TextHelper.buildSuccess("Successfully created ticket. " + channel.getAsMention())).queue();
+                reply.setContent(TextHelper.buildSuccess("Successfully created ticket. " + channel.getAsMention())).setEphemeral(true).queue();
             } catch (Exception e) {
                 if (e instanceof InsufficientPermissionException) {
                     reply.setContent(TextHelper.buildFailure("Unable to create ticket because I don't have permission to do so! Please contact a server admin.")).queue();
@@ -84,7 +82,7 @@ public class TicketHandler {
         if (closeConfirmations.containsKey(channelId)) {
             reply.setContent(TextHelper.buildFailure("You already have an active confirmation in this ticket."));
         } else {
-            closeConfirmations.put(channel.getIdLong(), new ImmutablePair<>(reason, member));
+            closeConfirmations.put(channel.getIdLong(), reason);
             reply.setContent("Are you sure you want to close this ticket?" + (reason == null ? "" : "\n**Reason:** " + reason))
                     .addActionRow(
                             Button.success("ticket|close|confirmation|accept|" + channel.getId(), "Confirm"),
@@ -94,7 +92,7 @@ public class TicketHandler {
         }
     }
 
-    public Pair<String, Member> getConfirmationOf(long id) {
+    public String getConfirmationOf(long id) {
         return closeConfirmations.get(id);
     }
 

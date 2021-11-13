@@ -2,6 +2,7 @@ package xyz.deftu.ezrique.listeners;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.PrivateChannel;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import net.dv8tion.jda.api.interactions.components.Button;
@@ -22,14 +23,16 @@ public class TicketButtonListener extends ListenerBase {
 
             if (id.startsWith("ticket|close|confirmation|")) {
                 if (id.contains("accept")) {
-                    Pair<String, Member> confirmation = TicketHandler.getInstance().getConfirmationOf(event.getChannel().getIdLong());
-                    String reason = confirmation.left();
-                    Member member = confirmation.right();
+                    String reason = TicketHandler.getInstance().getConfirmationOf(event.getChannel().getIdLong());
                     event.getTextChannel().delete().reason("Ticket closed" + (reason == null ? "" : " - " + reason)).queue();
                     try {
+                        TextChannel channel = event.getTextChannel();
+                        String topic = channel.getTopic();
+                        Member member = event.getGuild().getMemberById(topic.substring(channel.getTopic().lastIndexOf("(")).replace("(", "").replace(")", ""));
                         PrivateChannel privateChannel = member.getUser().openPrivateChannel().complete();
                         privateChannel.sendMessage("Your ticket in " + event.getGuild().getName() + " (" + event.getTextChannel().getName() + ") was deleted." + (reason == null ? "" : "\n**Reason:** " + reason)).queue(message -> {}, throwable -> {});
                     } catch (Exception ignored) {
+                        ignored.printStackTrace();
                     }
                 }
 

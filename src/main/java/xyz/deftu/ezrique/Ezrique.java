@@ -20,11 +20,13 @@ import xyz.deftu.ezrique.listeners.*;
 import xyz.deftu.ezrique.listeners.exclusive.qalcyo.QalcyoTicketsListener;
 
 import java.awt.*;
+import java.time.OffsetDateTime;
 
 public class Ezrique extends Thread {
 
     /* Core. */
     private final Logger logger = LogManager.getLogger("Ezrique");
+    private OffsetDateTime startTime;
     private ConfigManager configManager;
     private CommandManager commandManager;
     private JDA api;
@@ -33,6 +35,8 @@ public class Ezrique extends Thread {
 
     public void initialize() throws Exception {
         logger.info("Starting...");
+        startTime = OffsetDateTime.now();
+
         configManager = new ConfigManager();
 
         commandManager = new CommandManager();
@@ -41,8 +45,8 @@ public class Ezrique extends Thread {
         commandManager.addCommand(new HelpCommand());
         commandManager.addCommand(new InviteCommand());
         commandManager.addCommand(new LeaveMessageCommand());
-        commandManager.addCommand(new PingCommand());
         commandManager.addCommand(new RestartCommand());
+        commandManager.addCommand(new StatisticsCommand());
         commandManager.addCommand(new TicketCommand());
         commandManager.addCommand(new WelcomeMessageCommand());
 
@@ -86,6 +90,14 @@ public class Ezrique extends Thread {
 
     public Color getPrimaryColour() {
         return isBeta() ? new Color(63, 56, 232) : new Color(153, 0, 0);
+    }
+
+    public Logger getLogger() {
+        return logger;
+    }
+
+    public OffsetDateTime getStartTime() {
+        return startTime;
     }
 
     public ConfigManager getConfigManager() {

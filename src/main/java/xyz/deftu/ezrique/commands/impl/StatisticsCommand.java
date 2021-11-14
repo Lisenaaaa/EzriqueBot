@@ -16,7 +16,7 @@ public class StatisticsCommand implements ICommand {
     }
 
     public void execute(Ezrique instance, SlashCommandEvent event) {
-        EmbedBuilder embedBuilder = instance.getComponentCreator().createEmbed();
+        EmbedBuilder embedBuilder = instance.getComponentCreator().createEmbed(event.getJDA());
 
         embedBuilder.addField("Bot", retrieveBotStatistics(instance), false);
         embedBuilder.addField("Global", retrieveGlobalStatistics(instance), false);

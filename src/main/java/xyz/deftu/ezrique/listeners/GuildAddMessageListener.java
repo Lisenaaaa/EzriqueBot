@@ -19,7 +19,7 @@ public class GuildAddMessageListener extends ListenerBase {
         for (TextChannel textChannel : guild.getTextChannels()) {
             if (textChannel != null && textChannel.getName().toLowerCase().contains("bot")) {
                 textChannel.sendMessage(new MessageBuilder()
-                        .setEmbeds(ezrique.getComponentCreator().createEmbed()
+                        .setEmbeds(ezrique.getComponentCreator().createEmbed(event.getJDA())
                                 .appendDescription("Hey! Thanks for adding me. Use the `/help` command to see everything I have to offer.")
                                 .build())
                         .setActionRows(ActionRow.of(

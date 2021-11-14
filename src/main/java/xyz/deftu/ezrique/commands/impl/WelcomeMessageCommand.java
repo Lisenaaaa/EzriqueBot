@@ -57,7 +57,7 @@ public class WelcomeMessageCommand implements ICommand {
 
                 if (messageMapping == null) {
                     if (reply.isEmpty()) {
-                        EmbedBuilder embedBuilder = instance.getComponentCreator().createEmbed();
+                        EmbedBuilder embedBuilder = instance.getComponentCreator().createEmbed(event.getJDA());
                         if (instance.getConfigManager().getGuild().hasWelcomeMessage(event.getGuild().getId()))
                             embedBuilder.addField("Current message", instance.getConfigManager().getGuild().getWelcomeMessage(event.getGuild().getId()), false);
                         embedBuilder.addField("Variables", retrieveVariables(event), false);

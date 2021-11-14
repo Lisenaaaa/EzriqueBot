@@ -21,7 +21,7 @@ public class HelpCommand implements ICommand {
 
     public void execute(Ezrique instance, SlashCommandEvent event) {
         MessageBuilder messageBuilder = new MessageBuilder();
-        EmbedBuilder embedBuilder = instance.getComponentCreator().createEmbed();
+        EmbedBuilder embedBuilder = instance.getComponentCreator().createEmbed(event.getJDA());
 
         CommandManager commandManager = instance.getCommandManager();
         for (ICommand command : commandManager.getCommands()) {

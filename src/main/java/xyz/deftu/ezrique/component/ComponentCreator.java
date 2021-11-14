@@ -8,6 +8,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import xyz.deftu.ezrique.Ezrique;
 
+import java.time.OffsetDateTime;
+
 public class ComponentCreator {
 
     private final Ezrique ezrique;
@@ -21,10 +23,11 @@ public class ComponentCreator {
         this.api = ezrique.getApi();
     }
 
-    public EmbedBuilder createEmbed() {
+    public EmbedBuilder createEmbed(JDA shard) {
         EmbedBuilder value = new EmbedBuilder();
         value.setColor(ezrique.getPrimaryColour());
-        value.setFooter("Join my server for support! " + ezrique.getConfigManager().getBot().getSupportInvite(), ezrique.getApi().getShardById(0).getSelfUser().getAvatarUrl());
+        value.setTimestamp(OffsetDateTime.now());
+        value.setFooter("Shard ID: " + shard.getShardInfo().getShardId());
         return value;
     }
 

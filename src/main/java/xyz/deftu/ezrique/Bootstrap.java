@@ -7,6 +7,8 @@ public class Bootstrap {
     public static void main(String[] args) {
         bot = new Ezrique();
         bot.start();
+
+        Runtime.getRuntime().addShutdownHook(new Thread(bot::kill, "Ezrique shutdown"));
     }
 
     public static void restart() {

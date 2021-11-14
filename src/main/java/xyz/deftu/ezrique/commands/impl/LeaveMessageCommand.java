@@ -57,7 +57,7 @@ public class LeaveMessageCommand implements ICommand {
 
                 if (messageMapping == null) {
                     if (reply.isEmpty()) {
-                        EmbedBuilder embedBuilder = instance.getComponentCreator().createEmbed();
+                        EmbedBuilder embedBuilder = instance.getComponentCreator().createEmbed(event.getJDA());
                         if (instance.getConfigManager().getGuild().hasLeaveMessage(event.getGuild().getId()))
                             embedBuilder.addField("Current message", instance.getConfigManager().getGuild().getLeaveMessage(event.getGuild().getId()), false);
                         embedBuilder.addField("Variables", retrieveVariables(event), false);

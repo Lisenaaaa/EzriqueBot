@@ -25,7 +25,7 @@ public class QalcyoTicketsCommand extends CommandImpl {
 
     public void execute(Ezrique instance, SlashCommandEvent event) {
         if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-            EmbedBuilder embedBuilder = instance.getComponentCreator().createEmbed();
+            EmbedBuilder embedBuilder = instance.getComponentCreator().createEmbed(event.getJDA());
             embedBuilder.appendDescription("Hello! Click the button below to open a ticket.");
             embedBuilder.appendDescription("\n");
             embedBuilder.appendDescription("We offer support for non-Qalcyo products, however we cannot guarantee that we can help you.");

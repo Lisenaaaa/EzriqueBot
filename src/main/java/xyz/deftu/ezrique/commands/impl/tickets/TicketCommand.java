@@ -109,7 +109,7 @@ public class TicketCommand implements ICommand {
                 variableBuilder.append("{id}: ").append(event.getMember().getId()).append("\n");
                 variableBuilder.append("{uuid}: ").append(IdentificationHelper.generateUuid());
 
-                EmbedBuilder embedBuilder = instance.getComponentCreator().createEmbed();
+                EmbedBuilder embedBuilder = instance.getComponentCreator().createEmbed(event.getJDA());
                 if (instance.getConfigManager().getGuild().hasTicketName(event.getGuild().getId()))
                     embedBuilder.addField("Current name", instance.getConfigManager().getGuild().getTicketName(event.getGuild().getId()), false);
                 embedBuilder.addField("Variables", variableBuilder.toString(), false);

@@ -44,13 +44,11 @@ public class Ezrique extends Thread {
         commandManager = new CommandManager();
         commandManager.addCommand(new EmojiCommand());
         commandManager.addCommand(new HelpCommand());
-        commandManager.addCommand(new InviteCommand());
         commandManager.addCommand(new LeaveMessageCommand());
+        commandManager.addCommand(new LinksCommand());
         commandManager.addCommand(new NukeCommand());
-        commandManager.addCommand(new QalcyoCommand());
         commandManager.addCommand(new RestartCommand());
         commandManager.addCommand(new StatisticsCommand());
-        commandManager.addCommand(new SupportCommand());
         commandManager.addCommand(new TicketCommand());
         commandManager.addCommand(new WelcomeMessageCommand());
 
@@ -78,10 +76,8 @@ public class Ezrique extends Thread {
         componentCreator = new ComponentCreator(this);
 
         for (JDA shard : api.getShards()) {
-            shard.getPresence().setActivity(Activity.playing(String.format("with Deftu's mind | %s/%s", shard.getShardInfo().getShardId(), shard.getShardInfo().getShardTotal())));
+            shard.getPresence().setActivity(Activity.playing(String.format("with Deftu's mind | %s/%s", shard.getShardInfo().getShardId(), api.getShardCache().size())));
         }
-
-        Runtime.getRuntime().addShutdownHook(new Thread(this::kill, "Ezrique shutdown"));
     }
 
     public void kill() {

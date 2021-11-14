@@ -25,7 +25,7 @@ public class ComponentCreator {
 
     public EmbedBuilder createEmbed(JDA shard) {
         EmbedBuilder value = new EmbedBuilder();
-        value.setColor(ezrique.getPrimaryColour());
+        value.setColor(ezrique.getMetadata().getPrimaryColour());
         value.setTimestamp(OffsetDateTime.now());
         value.setFooter("Shard ID: " + shard.getShardInfo().getShardId());
         return value;

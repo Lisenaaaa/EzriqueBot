@@ -13,7 +13,7 @@ public class RestartCommand implements ICommand {
     }
 
     public void execute(Ezrique instance, SlashCommandEvent event) {
-        if (event.getUser().getId().equals(instance.getConfigManager().getBot().getOwnerId())) {
+        if (event.getUser().getId().equals(instance.getMetadata().getOwnerId())) {
             event.deferReply().complete().deleteOriginal().queue();
             Bootstrap.restart();
         } else {

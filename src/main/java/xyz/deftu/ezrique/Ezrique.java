@@ -18,11 +18,11 @@ import xyz.deftu.ezrique.commands.impl.exclusive.testingserver.TestingServerComm
 import xyz.deftu.ezrique.commands.impl.tickets.TicketCommand;
 import xyz.deftu.ezrique.component.ComponentCreator;
 import xyz.deftu.ezrique.config.ConfigManager;
+import xyz.deftu.ezrique.config.impl.GuildConfig;
 import xyz.deftu.ezrique.listeners.*;
 import xyz.deftu.ezrique.listeners.exclusive.qalcyo.QalcyoTicketsListener;
 import xyz.deftu.ezrique.mongo.MongoConnection;
 
-import java.awt.*;
 import java.time.OffsetDateTime;
 
 public class Ezrique extends Thread {
@@ -30,6 +30,7 @@ public class Ezrique extends Thread {
     private final Logger logger = LogManager.getLogger("Ezrique");
     private OffsetDateTime startTime;
 
+    private BotMetadata metadata;
     private MongoConnection mongoConnection;
     private ConfigManager configManager;
 
@@ -43,11 +44,17 @@ public class Ezrique extends Thread {
         logger.info("Starting...");
         startTime = OffsetDateTime.now();
 
-        configManager = new ConfigManager();
+        metadata = new BotMetadata();
+        metadata.initialize();
 
-        api = DefaultShardManagerBuilder.createDefault(configManager.getBot().getToken())
+        mongoConnection = new MongoConnection(metadata.getMongoUsername(), metadata.getMongoPassword());
+
+        configManager = new ConfigManager();
+        configManager.addConfiguration(new GuildConfig());
+        configManager.initialize(this);
+
+        api = DefaultShardManagerBuilder.createDefault(metadata.getToken())
                 .setEventManagerProvider(id -> new AnnotatedEventManager())
-                .addEventListeners(commandManager)
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
                 .setChunkingFilter(ChunkingFilter.ALL)
@@ -89,20 +96,16 @@ public class Ezrique extends Thread {
         stop();
     }
 
-    public boolean isBeta() {
-        return api.getShardById(0).getSelfUser().getName().toLowerCase().endsWith("beta");
-    }
-
-    public Color getPrimaryColour() {
-        return isBeta() ? new Color(63, 56, 232) : new Color(153, 0, 0);
-    }
-
     public Logger getLogger() {
         return logger;
     }
 
     public OffsetDateTime getStartTime() {
         return startTime;
+    }
+
+    public BotMetadata getMetadata() {
+        return metadata;
     }
 
     public MongoConnection getMongoConnection() {

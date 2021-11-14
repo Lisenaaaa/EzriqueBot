@@ -47,10 +47,6 @@ public class HelpCommand implements ICommand {
             }
         }
 
-        messageBuilder.setActionRows(ActionRow.of(
-                Button.link(instance.getConfigManager().getBot().getSupportInvite(), "Support server")
-        ));
-
         event.reply(messageBuilder.setEmbeds(embedBuilder.build()).build()).queue();
     }
 

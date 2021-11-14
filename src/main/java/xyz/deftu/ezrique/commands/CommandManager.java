@@ -26,6 +26,8 @@ public class CommandManager {
     }
 
     public void initialize(ShardManager api) {
+        api.addEventListener(this);
+
         CommandListUpdateAction globalUpdateAction = api.getShardById(0).updateCommands();
         for (ICommand command : commands) {
             command.initialize(Ezrique.getInstance(), api);

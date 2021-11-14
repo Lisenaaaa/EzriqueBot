@@ -1,9 +1,13 @@
 package xyz.deftu.ezrique.config.impl;
 
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import org.bson.Document;
+import xyz.deftu.ezrique.Ezrique;
 import xyz.deftu.ezrique.config.IConfigChild;
 import xyz.deftu.ezrique.config.IConfigObject;
-import xyz.qalcyo.simpleconfig.Configuration;
-import xyz.qalcyo.simpleconfig.Subconfiguration;
+import xyz.deftu.ezrique.util.MongoHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +26,10 @@ public class GuildConfig implements IConfigObject {
     private static final String TICKET_ROLE = "ticket_role";
     private static final String TICKET_CATEGORY = "ticket_category";
 
-    private Configuration configuration;
-    private Subconfiguration self;
+    private Ezrique instance;
+
+    private MongoDatabase database;
+    private MongoCollection<Document> collection;
 
     private final List<IConfigChild> children = new ArrayList<>();
 
@@ -31,186 +37,206 @@ public class GuildConfig implements IConfigObject {
         return "guilds";
     }
 
-    public void initialize(Configuration configuration, Subconfiguration self) {
-        this.configuration = configuration;
-        this.self = self;
+    public void initialize(Ezrique instance, MongoDatabase database, MongoCollection<Document> collection) {
+        this.instance = instance;
+        this.database = database;
+        this.collection = collection;
+    }
+
+    public void update(String id, Document updated) {
+        collection.replaceOne(Filters.eq("identifier", id), updated);
     }
 
     private void ensureExistence(String id) {
+        Document guild = retrieveGuild(id);
         boolean updated = false;
-        if (!self.hasKey(id)) {
-            self.createSubconfiguration(id);
+
+        if (guild == null) {
+            Document document = new Document();
+            document.put("identifier", id);
+            collection.insertOne(document);
+            guild = retrieveGuild(id);
+        }
+
+        assert guild != null;
+
+        if (!guild.containsKey(WELCOME_MESSAGE_TOGGLE)) {
+            guild.put(WELCOME_MESSAGE_TOGGLE, false);
             updated = true;
         }
 
-        Subconfiguration guild = retrieveGuild(id);
-
-        if (!guild.hasKey(WELCOME_MESSAGE_TOGGLE)) {
-            guild.add(WELCOME_MESSAGE_TOGGLE, false);
+        if (!guild.containsKey(LEAVE_MESSAGE_TOGGLE)) {
+            guild.put(LEAVE_MESSAGE_TOGGLE, false);
             updated = true;
         }
 
-        if (!guild.hasKey(LEAVE_MESSAGE_TOGGLE)) {
-            guild.add(LEAVE_MESSAGE_TOGGLE, false);
+        if (!guild.containsKey(TICKET_NAME)) {
+            guild.put(TICKET_NAME, "{name}-{uuid}");
             updated = true;
         }
 
-        if (!guild.hasKey(TICKET_NAME)) {
-            guild.add(TICKET_NAME, "{name}-{uuid}");
-            updated = true;
-        }
-
-        if (!guild.hasKey(TICKET_TOGGLE)) {
-            guild.add(TICKET_TOGGLE, false);
+        if (!guild.containsKey(TICKET_TOGGLE)) {
+            guild.put(TICKET_TOGGLE, false);
             updated = true;
         }
 
         if (updated) {
-            configuration.save();
+            update(id, guild);
         }
     }
 
     public boolean hasWelcomeChannel(String id) {
         ensureExistence(id);
-        return self.hasKey(id) && retrieveGuild(id).hasKey(WELCOME_MESSAGE_TOGGLE) && retrieveGuild(id).getAsBoolean(WELCOME_MESSAGE_TOGGLE) && retrieveGuild(id).hasKey(WELCOME_CHANNEL);
+        Document guild = retrieveGuild(id);
+        return guild.containsKey(WELCOME_MESSAGE_TOGGLE) && guild.getBoolean(WELCOME_MESSAGE_TOGGLE) && guild.containsKey(WELCOME_CHANNEL);
     }
 
     public String getWelcomeChannel(String id) {
         ensureExistence(id);
-        return retrieveGuild(id).getAsString(WELCOME_CHANNEL);
+        return retrieveGuild(id).getString(WELCOME_CHANNEL);
     }
 
     public void setWelcomeChannel(String id, String value) {
         ensureExistence(id);
-        retrieveGuild(id).add(WELCOME_CHANNEL, value);
-        configuration.save();
+        Document guild = retrieveGuild(id);
+        guild.put(WELCOME_CHANNEL, value);
+        update(id, guild);
     }
 
     public boolean hasWelcomeMessage(String id) {
         ensureExistence(id);
-        return self.hasKey(id) && retrieveGuild(id).hasKey(WELCOME_MESSAGE_TOGGLE) && retrieveGuild(id).getAsBoolean(WELCOME_MESSAGE_TOGGLE) && retrieveGuild(id).hasKey(WELCOME_MESSAGE);
+        Document guild = retrieveGuild(id);
+        return guild.containsKey(WELCOME_MESSAGE_TOGGLE) && guild.getBoolean(WELCOME_MESSAGE_TOGGLE) && guild.containsKey(WELCOME_MESSAGE);
     }
 
     public void setWelcomeMessageToggle(String id, boolean toggle) {
         ensureExistence(id);
-        retrieveGuild(id).add(WELCOME_MESSAGE_TOGGLE, toggle);
-        configuration.save();
+        Document document = retrieveGuild(id);
+        document.put(WELCOME_MESSAGE_TOGGLE, toggle);
+        update(id, document);
     }
 
     public String getWelcomeMessage(String id) {
         ensureExistence(id);
-        return retrieveGuild(id).getAsString(WELCOME_MESSAGE);
+        return retrieveGuild(id).getString(WELCOME_MESSAGE);
     }
 
     public void setWelcomeMessage(String id, String value) {
         ensureExistence(id);
-        retrieveGuild(id).add(WELCOME_MESSAGE, value);
-        configuration.save();
+        Document document = retrieveGuild(id);
+        document.put(WELCOME_MESSAGE, value);
+        update(id, document);
     }
 
     public boolean hasLeaveChannel(String id) {
         ensureExistence(id);
-        return self.hasKey(id) && retrieveGuild(id).hasKey(LEAVE_MESSAGE_TOGGLE) && retrieveGuild(id).getAsBoolean(LEAVE_MESSAGE_TOGGLE) && retrieveGuild(id).hasKey(LEAVE_CHANNEL);
+        Document guild = retrieveGuild(id);
+        return guild.containsKey(LEAVE_MESSAGE_TOGGLE) && guild.getBoolean(LEAVE_MESSAGE_TOGGLE) && guild.containsKey(LEAVE_CHANNEL);
     }
 
     public String getLeaveChannel(String id) {
         ensureExistence(id);
-        return retrieveGuild(id).getAsString(LEAVE_CHANNEL);
+        return retrieveGuild(id).getString(LEAVE_CHANNEL);
     }
 
     public void setLeaveChannel(String id, String value) {
         ensureExistence(id);
-        retrieveGuild(id).add(LEAVE_CHANNEL, value);
-        configuration.save();
+        Document guild = retrieveGuild(id);
+        guild.put(LEAVE_CHANNEL, value);
+        update(id, guild);
     }
 
     public boolean hasLeaveMessage(String id) {
         ensureExistence(id);
-        return self.hasKey(id) && retrieveGuild(id).hasKey(LEAVE_MESSAGE_TOGGLE) && retrieveGuild(id).getAsBoolean(LEAVE_MESSAGE_TOGGLE) && retrieveGuild(id).hasKey(LEAVE_MESSAGE);
+        Document guild = retrieveGuild(id);
+        return guild.containsKey(LEAVE_MESSAGE_TOGGLE) && guild.getBoolean(LEAVE_MESSAGE_TOGGLE) && guild.containsKey(LEAVE_MESSAGE);
     }
 
     public void setLeaveMessageToggle(String id, boolean toggle) {
         ensureExistence(id);
-        retrieveGuild(id).add(LEAVE_MESSAGE_TOGGLE, toggle);
-        configuration.save();
+        Document guild = retrieveGuild(id);
+        guild.put(LEAVE_MESSAGE_TOGGLE, toggle);
+        update(id, guild);
     }
 
     public String getLeaveMessage(String id) {
         ensureExistence(id);
-        return retrieveGuild(id).getAsString(LEAVE_MESSAGE);
+        return retrieveGuild(id).getString(LEAVE_MESSAGE);
     }
 
     public void setLeaveMessage(String id, String value) {
         ensureExistence(id);
-        retrieveGuild(id).add(LEAVE_MESSAGE, value);
-        configuration.save();
+        Document guild = retrieveGuild(id);
+        guild.put(LEAVE_MESSAGE, value);
+        update(id, guild);
     }
 
     public boolean hasTickets(String id) {
         ensureExistence(id);
-        return self.hasKey(id) && retrieveGuild(id).hasKey(TICKET_TOGGLE) && retrieveGuild(id).getAsBoolean(TICKET_TOGGLE);
+        Document guild = retrieveGuild(id);
+        return guild.containsKey(TICKET_TOGGLE) && guild.getBoolean(TICKET_TOGGLE);
     }
 
     public void setTicketToggle(String id, boolean value) {
         ensureExistence(id);
-        retrieveGuild(id).add(TICKET_TOGGLE, value);
-        configuration.save();
+        Document guild = retrieveGuild(id);
+        guild.put(TICKET_TOGGLE, value);
+        update(id, guild);
     }
 
     public boolean hasTicketName(String id) {
         ensureExistence(id);
-        return self.hasKey(id) && retrieveGuild(id).hasKey(TICKET_NAME);
+        return retrieveGuild(id).containsKey(TICKET_NAME);
     }
 
     public String getTicketName(String id) {
         ensureExistence(id);
-        return retrieveGuild(id).getAsString(TICKET_NAME);
+        return retrieveGuild(id).getString(TICKET_NAME);
     }
 
     public void setTicketName(String id, String value) {
         ensureExistence(id);
-        retrieveGuild(id).add(TICKET_NAME, value);
-        configuration.save();
+        Document guild = retrieveGuild(id);
+        guild.put(TICKET_NAME, value);
+        update(id, guild);
     }
 
     public boolean hasTicketRole(String id) {
         ensureExistence(id);
-        return self.hasKey(id) && retrieveGuild(id).hasKey(TICKET_ROLE);
+        return retrieveGuild(id).containsKey(TICKET_ROLE);
     }
 
     public String getTicketRole(String id) {
         ensureExistence(id);
-        return retrieveGuild(id).getAsString(TICKET_ROLE);
+        return retrieveGuild(id).getString(TICKET_ROLE);
     }
 
     public void setTicketRole(String id, String value) {
         ensureExistence(id);
-        retrieveGuild(id).add(TICKET_ROLE, value);
-        configuration.save();
+        Document guild = retrieveGuild(id);
+        guild.put(TICKET_ROLE, value);
+        update(id, guild);
     }
 
     public boolean hasTicketCategory(String id) {
         ensureExistence(id);
-        return self.hasKey(id) && retrieveGuild(id).hasKey(TICKET_CATEGORY);
+        return retrieveGuild(id).containsKey(TICKET_CATEGORY);
     }
 
     public String getTicketCategory(String id) {
         ensureExistence(id);
-        return retrieveGuild(id).getAsString(TICKET_CATEGORY);
+        return retrieveGuild(id).getString(TICKET_CATEGORY);
     }
 
     public void setTicketCategory(String id, String value) {
         ensureExistence(id);
-        retrieveGuild(id).add(TICKET_CATEGORY, value);
-        configuration.save();
+        Document guild = retrieveGuild(id);
+        guild.put(TICKET_CATEGORY, value);
+        update(id, guild);
     }
 
-    private Subconfiguration retrieveGuild(String id) {
-        return self.getSubconfiguration(id);
-    }
-
-    public Configuration getConfiguration() {
-        return configuration;
+    private Document retrieveGuild(String id) {
+        return collection.find(Filters.eq("identifier", id)).first();
     }
 
     public List<IConfigChild> getChildren() {

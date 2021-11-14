@@ -7,7 +7,6 @@ import org.bson.Document;
 import xyz.deftu.ezrique.Ezrique;
 import xyz.deftu.ezrique.config.IConfigChild;
 import xyz.deftu.ezrique.config.IConfigObject;
-import xyz.deftu.ezrique.util.MongoHelper;
 
 import java.util.ArrayList;
 import java.util.List;

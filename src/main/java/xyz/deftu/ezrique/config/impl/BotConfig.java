@@ -1,4 +1,4 @@
-package xyz.deftu.ezrique.config.impl.children;
+package xyz.deftu.ezrique.config.impl;
 
 import xyz.deftu.ezrique.config.IConfigChild;
 import xyz.qalcyo.simpleconfig.Configuration;

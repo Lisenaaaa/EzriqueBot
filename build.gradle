@@ -52,6 +52,7 @@ dependencies {
     shade('org.apache.logging.log4j:log4j-slf4j18-impl:2.14.1')
 
     shade('net.dv8tion:JDA:4.3.0_346')
+    shade('org.mongodb:mongodb-driver-sync:4.3.0')
 }
 
 jar {

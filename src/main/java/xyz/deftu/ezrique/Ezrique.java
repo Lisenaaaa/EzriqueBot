@@ -20,18 +20,22 @@ import xyz.deftu.ezrique.component.ComponentCreator;
 import xyz.deftu.ezrique.config.ConfigManager;
 import xyz.deftu.ezrique.listeners.*;
 import xyz.deftu.ezrique.listeners.exclusive.qalcyo.QalcyoTicketsListener;
+import xyz.deftu.ezrique.mongo.MongoConnection;
 
 import java.awt.*;
 import java.time.OffsetDateTime;
 
 public class Ezrique extends Thread {
 
-    /* Core. */
     private final Logger logger = LogManager.getLogger("Ezrique");
     private OffsetDateTime startTime;
+
+    private MongoConnection mongoConnection;
     private ConfigManager configManager;
-    private CommandManager commandManager;
+
     private ShardManager api;
+
+    private CommandManager commandManager;
     private ListenerManager listenerManager;
     private ComponentCreator componentCreator;
 
@@ -40,6 +44,15 @@ public class Ezrique extends Thread {
         startTime = OffsetDateTime.now();
 
         configManager = new ConfigManager();
+
+        api = DefaultShardManagerBuilder.createDefault(configManager.getBot().getToken())
+                .setEventManagerProvider(id -> new AnnotatedEventManager())
+                .addEventListeners(commandManager)
+                .setStatus(OnlineStatus.DO_NOT_DISTURB)
+                .enableIntents(GatewayIntent.GUILD_MEMBERS)
+                .setChunkingFilter(ChunkingFilter.ALL)
+                .setMemberCachePolicy(MemberCachePolicy.ALL)
+                .build();
 
         commandManager = new CommandManager();
         commandManager.addCommand(new EmojiCommand());
@@ -54,15 +67,6 @@ public class Ezrique extends Thread {
 
         commandManager.addCommand(new QalcyoTicketsCommand());
         commandManager.addCommand(new TestingServerCommand());
-
-        api = DefaultShardManagerBuilder.createDefault(configManager.getBot().getToken())
-                .setEventManagerProvider(id -> new AnnotatedEventManager())
-                .addEventListeners(commandManager)
-                .setStatus(OnlineStatus.DO_NOT_DISTURB)
-                .enableIntents(GatewayIntent.GUILD_MEMBERS)
-                .setChunkingFilter(ChunkingFilter.ALL)
-                .setMemberCachePolicy(MemberCachePolicy.ALL)
-                .build();
         commandManager.initialize(api);
 
         listenerManager = new ListenerManager();
@@ -99,6 +103,10 @@ public class Ezrique extends Thread {
 
     public OffsetDateTime getStartTime() {
         return startTime;
+    }
+
+    public MongoConnection getMongoConnection() {
+        return mongoConnection;
     }
 
     public ConfigManager getConfigManager() {

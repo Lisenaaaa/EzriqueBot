@@ -1,13 +1,14 @@
-package xyz.deftu.ezrique.config.impl.children;
+package xyz.deftu.ezrique.config.impl;
 
 import xyz.deftu.ezrique.config.IConfigChild;
+import xyz.deftu.ezrique.config.IConfigObject;
 import xyz.qalcyo.simpleconfig.Configuration;
 import xyz.qalcyo.simpleconfig.Subconfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GuildConfig implements IConfigChild {
+public class GuildConfig implements IConfigObject {
 
     private static final String WELCOME_CHANNEL = "welcome_channel";
     private static final String WELCOME_MESSAGE = "welcome_message";

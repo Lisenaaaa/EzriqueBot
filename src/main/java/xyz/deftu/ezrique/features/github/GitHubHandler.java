@@ -35,6 +35,8 @@ public class GitHubHandler {
 
                     if (object.hasKey("starred_at"))
                         type = GitHubType.STAR;
+                    if (object.hasKey("head_commit"))
+                        type = GitHubType.COMMIT;
 
                     IGitHubProcessor processor = processors.get(type);
                     if (processor != null) {

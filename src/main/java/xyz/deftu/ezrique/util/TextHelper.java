@@ -17,4 +17,8 @@ public class TextHelper {
         return Ezrique.getInstance().getComponentCreator().createFailEmote().getAsMention() + " " + content;
     }
 
+    public static String dateTime(long epochSecond) {
+        return String.format("<t:%s:f>", epochSecond);
+    }
+
 }

@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import xyz.deftu.ezrique.Ezrique;
+import xyz.deftu.ezrique.features.github.impl.GitHubCommitProcessor;
 import xyz.deftu.ezrique.features.github.impl.GitHubStarProcessor;
 import xyz.deftu.ezrique.features.github.impl.GitHubUnknownProcessor;
 import xyz.qalcyo.json.entities.JsonObject;
@@ -20,6 +21,7 @@ public class GitHubHandler {
     public void initialize() {
         addProcessor(GitHubType.UNKNOWN, new GitHubUnknownProcessor());
         addProcessor(GitHubType.STAR, new GitHubStarProcessor());
+        addProcessor(GitHubType.COMMIT, new GitHubCommitProcessor());
     }
 
     public void handle(JsonObject object, long id) {

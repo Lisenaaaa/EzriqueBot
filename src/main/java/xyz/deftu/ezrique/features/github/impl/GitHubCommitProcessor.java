@@ -29,7 +29,7 @@ public class GitHubCommitProcessor implements IGitHubProcessor {
                 OffsetDateTime timestamp = OffsetDateTime.parse(commit.getAsString("timestamp"));
 
                 value.appendDescription("[").appendDescription(TextHelper.dateTime(timestamp.toEpochSecond())).appendDescription(" - ")
-                        .appendDescription("`[").appendDescription(id).appendDescription("](").appendDescription(url).appendDescription(")`").appendDescription("] ")
+                        .appendDescription("[").appendDescription(id).appendDescription("](").appendDescription(url).appendDescription(")").appendDescription("] ")
                         .appendDescription(message).appendDescription(" - ").appendDescription(committer.getAsString("username"));
                 if (!last) {
                     value.appendDescription("\n");

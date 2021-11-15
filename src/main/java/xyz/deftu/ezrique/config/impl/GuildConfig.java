@@ -30,6 +30,10 @@ public class GuildConfig implements IConfigObject {
     private static final String AUTOROLE_BOTS = "autorole_bots";
     private static final String AUTOROLE_BOTS_TOGGLE = "autorole_bots_toggle";
 
+    private static final String GITHUB_TOGGLE = "github_toggle";
+    private static final String GITHUB_CHANNEL = "github_channel";
+    private static final String GITHUB_ROLE = "github_role";
+
     private Ezrique instance;
 
     private MongoDatabase database;
@@ -91,6 +95,11 @@ public class GuildConfig implements IConfigObject {
 
         if (!guild.containsKey(AUTOROLE_BOTS_TOGGLE)) {
             guild.put(AUTOROLE_BOTS_TOGGLE, false);
+            updated = true;
+        }
+
+        if (!guild.containsKey(GITHUB_TOGGLE)) {
+            guild.put(GITHUB_TOGGLE, false);
             updated = true;
         }
 
@@ -296,6 +305,47 @@ public class GuildConfig implements IConfigObject {
         ensureExistence(id);
         Document guild = retrieveGuild(id);
         guild.put(AUTOROLE_BOTS, value);
+        update(id, guild);
+    }
+
+    public boolean hasGitHub(String id) {
+        ensureExistence(id);
+        return retrieveGuild(id).getBoolean(GITHUB_TOGGLE);
+    }
+
+    public void setGitHubToggle(String id, boolean value) {
+        ensureExistence(id);
+        Document guild = retrieveGuild(id);
+        guild.put(GITHUB_TOGGLE, value);
+        update(id, guild);
+    }
+
+    public String getGitHubChannel(String id) {
+        ensureExistence(id);
+        return retrieveGuild(id).getString(GITHUB_CHANNEL);
+    }
+
+    public void setGitHubChannel(String id, String value) {
+        ensureExistence(id);
+        Document guild = retrieveGuild(id);
+        guild.put(GITHUB_CHANNEL, value);
+        update(id, guild);
+    }
+
+    public boolean hasGitHubRole(String id) {
+        ensureExistence(id);
+        return retrieveGuild(id).containsKey(GITHUB_ROLE);
+    }
+
+    public String getGitHubRole(String id) {
+        ensureExistence(id);
+        return retrieveGuild(id).getString(GITHUB_ROLE);
+    }
+
+    public void setGitHubRole(String id, String value) {
+        ensureExistence(id);
+        Document guild = retrieveGuild(id);
+        guild.put(GITHUB_ROLE, value);
         update(id, guild);
     }
 

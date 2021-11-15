@@ -18,19 +18,6 @@ public class TestingServerCommand extends CommandImpl {
     }
 
     public void execute(Ezrique instance, SlashCommandEvent event) {
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url("http://102.129.56.183:4357/github")
-                .post(RequestBody.create(MediaType.parse("text/json"), "{\"id\":\"231464321343246123445\"}"))
-                .build();
-
-        try {
-            Response response = client.newCall(request).execute();
-            System.out.println(response.body());
-            System.out.println(response.body().string());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
 }

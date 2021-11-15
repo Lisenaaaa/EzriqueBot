@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 import xyz.deftu.ezrique.Ezrique;
-import xyz.deftu.ezrique.tickets.TicketHandler;
+import xyz.deftu.ezrique.features.TicketHandler;
 import xyz.deftu.ezrique.util.IdentificationHelper;
 import xyz.deftu.ezrique.util.TextHelper;
 

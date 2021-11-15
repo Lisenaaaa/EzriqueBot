@@ -19,11 +19,13 @@ import xyz.deftu.ezrique.commands.impl.TicketCommand;
 import xyz.deftu.ezrique.component.ComponentCreator;
 import xyz.deftu.ezrique.config.ConfigManager;
 import xyz.deftu.ezrique.config.impl.GuildConfig;
+import xyz.deftu.ezrique.features.github.GitHubHandler;
 import xyz.deftu.ezrique.listeners.*;
 import xyz.deftu.ezrique.listeners.TicketMenuListener;
 import xyz.deftu.ezrique.mongo.MongoConnection;
-import xyz.deftu.ezrique.networking.GitHubEndpoint;
+import xyz.deftu.ezrique.networking.impl.GitHubEndpoint;
 import xyz.deftu.ezrique.networking.NetworkManager;
+import xyz.deftu.ezrique.networking.impl.StatsEndpoint;
 import xyz.qalcyo.mango.Multithreading;
 
 import java.time.OffsetDateTime;
@@ -75,13 +77,17 @@ public class Ezrique extends Thread {
             Multithreading.schedule(() -> dbl.setStats((int) api.getGuildCache().size()), 30, TimeUnit.MINUTES);
         }
 
+        GitHubHandler.getInstance().initialize();
+
         networkManager = new NetworkManager();
         networkManager.addEndpoint(new GitHubEndpoint());
+        networkManager.addEndpoint(new StatsEndpoint());
         networkManager.initialize();
 
         commandManager = new CommandManager();
         commandManager.addCommand(new AutoRoleCommand());
         commandManager.addCommand(new EmojiCommand());
+        commandManager.addCommand(new GitHubCommand());
         commandManager.addCommand(new HelpCommand());
         commandManager.addCommand(new LeaveMessageCommand());
         commandManager.addCommand(new LinksCommand());
@@ -105,7 +111,7 @@ public class Ezrique extends Thread {
         componentCreator = new ComponentCreator(this);
 
         for (JDA shard : api.getShards()) {
-            shard.getPresence().setActivity(Activity.playing(String.format("with Deftu's mind | %s/%s", shard.getShardInfo().getShardId(), api.getShardCache().size())));
+            shard.getPresence().setActivity(Activity.playing(String.format("with Deftu's mind | %s", shard.getShardInfo().getShardString())));
         }
     }
 

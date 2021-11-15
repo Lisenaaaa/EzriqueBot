@@ -23,12 +23,15 @@ public class ComponentCreator {
         this.api = ezrique.getApi();
     }
 
+    public EmbedBuilder createEmbed(JDA shard, EmbedBuilder original) {
+        original.setColor(ezrique.getMetadata().getPrimaryColour());
+        original.setTimestamp(OffsetDateTime.now());
+        original.setFooter("Shard ID: " + shard.getShardInfo().getShardId());
+        return original;
+    }
+
     public EmbedBuilder createEmbed(JDA shard) {
-        EmbedBuilder value = new EmbedBuilder();
-        value.setColor(ezrique.getMetadata().getPrimaryColour());
-        value.setTimestamp(OffsetDateTime.now());
-        value.setFooter("Shard ID: " + shard.getShardInfo().getShardId());
-        return value;
+        return createEmbed(shard, new EmbedBuilder());
     }
 
     public Emote createSuccessEmote() {

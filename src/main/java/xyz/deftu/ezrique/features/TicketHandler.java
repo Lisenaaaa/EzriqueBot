@@ -1,4 +1,4 @@
-package xyz.deftu.ezrique.tickets;
+package xyz.deftu.ezrique.features;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;

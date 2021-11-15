@@ -13,7 +13,7 @@ public class TestingServerCommand extends CommandImpl {
     }
 
     public void initialize(Ezrique instance, ShardManager api) {
-        addGuildId(690263476089782428L);
+        addGuildId(690263476089782428L); /* Deftu's Bot Testing */
     }
 
     public void execute(Ezrique instance, SlashCommandEvent event) {

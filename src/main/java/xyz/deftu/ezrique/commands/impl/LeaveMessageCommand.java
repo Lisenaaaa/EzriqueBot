@@ -3,6 +3,7 @@ package xyz.deftu.ezrique.commands.impl;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -21,6 +22,7 @@ public class LeaveMessageCommand implements ICommand {
                         new OptionData(OptionType.BOOLEAN, "toggle", "Whether this feature should be enabled or not."),
                         new OptionData(OptionType.STRING, "message", "The message sent when someone leaves your server."),
                         new OptionData(OptionType.CHANNEL, "channel", "The channel the leave message is sent to.")
+                                .setChannelTypes(ChannelType.TEXT)
                 );
     }
 

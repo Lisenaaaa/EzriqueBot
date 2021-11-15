@@ -16,6 +16,8 @@ public class BotMetadata {
 
     private String ownerId;
 
+    private String dblToken;
+
     public void initialize() {
         configuration = new Configuration("metadata", new File("./"));
 
@@ -24,6 +26,8 @@ public class BotMetadata {
         mongoPassword = getAndCheck("mongo_password").getAsString();
 
         ownerId = getAndCheck("owner_id").getAsString();
+
+        dblToken = getAndCheck("dbl_token").getAsString();
     }
 
     private JsonElement getAndCheck(String key) {
@@ -46,6 +50,10 @@ public class BotMetadata {
 
     public String getOwnerId() {
         return ownerId;
+    }
+
+    public String getDblToken() {
+        return dblToken;
     }
 
     public boolean isBeta() {

@@ -5,14 +5,14 @@ import xyz.deftu.ezrique.util.MongoHelper;
 
 public class MongoConnection {
 
-    private final MongoClient configurationsClient;
+    private final MongoClient client;
 
     public MongoConnection(String username, String password) {
-        configurationsClient = MongoHelper.createClient(username, password, "cluster-0", "configurations");
+        client = MongoHelper.createClient(username, password, "cluster-0", "configurations");
     }
 
-    public MongoClient getConfigurationsClient() {
-        return configurationsClient;
+    public MongoClient getClient() {
+        return client;
     }
 
 }

@@ -25,6 +25,11 @@ public class GuildConfig implements IConfigObject {
     private static final String TICKET_ROLE = "ticket_role";
     private static final String TICKET_CATEGORY = "ticket_category";
 
+    private static final String AUTOROLE = "autorole";
+    private static final String AUTOROLE_TOGGLE = "autorole_toggle";
+    private static final String AUTOROLE_BOTS = "autorole_bots";
+    private static final String AUTOROLE_BOTS_TOGGLE = "autorole_bots_toggle";
+
     private Ezrique instance;
 
     private MongoDatabase database;
@@ -76,6 +81,16 @@ public class GuildConfig implements IConfigObject {
 
         if (!guild.containsKey(TICKET_TOGGLE)) {
             guild.put(TICKET_TOGGLE, false);
+            updated = true;
+        }
+
+        if (!guild.containsKey(AUTOROLE_TOGGLE)) {
+            guild.put(AUTOROLE_TOGGLE, false);
+            updated = true;
+        }
+
+        if (!guild.containsKey(AUTOROLE_BOTS_TOGGLE)) {
+            guild.put(AUTOROLE_BOTS_TOGGLE, false);
             updated = true;
         }
 
@@ -231,6 +246,56 @@ public class GuildConfig implements IConfigObject {
         ensureExistence(id);
         Document guild = retrieveGuild(id);
         guild.put(TICKET_CATEGORY, value);
+        update(id, guild);
+    }
+
+    public boolean hasAutoRole(String id) {
+        ensureExistence(id);
+        Document guild = retrieveGuild(id);
+        return guild.getBoolean(AUTOROLE_TOGGLE) && guild.containsKey(AUTOROLE);
+    }
+
+    public void setAutoRoleToggle(String id, boolean toggle) {
+        ensureExistence(id);
+        Document guild = retrieveGuild(id);
+        guild.put(AUTOROLE_TOGGLE, toggle);
+        update(id, guild);
+    }
+
+    public String getAutoRole(String id) {
+        ensureExistence(id);
+        return retrieveGuild(id).getString(AUTOROLE);
+    }
+
+    public void setAutoRole(String id, String value) {
+        ensureExistence(id);
+        Document guild = retrieveGuild(id);
+        guild.put(AUTOROLE, value);
+        update(id, guild);
+    }
+
+    public boolean hasBotsAutoRole(String id) {
+        ensureExistence(id);
+        Document guild = retrieveGuild(id);
+        return guild.getBoolean(AUTOROLE_BOTS_TOGGLE) && guild.containsKey(AUTOROLE_BOTS);
+    }
+
+    public void setBotsAutoRoleToggle(String id, boolean toggle) {
+        ensureExistence(id);
+        Document guild = retrieveGuild(id);
+        guild.put(AUTOROLE_BOTS_TOGGLE, toggle);
+        update(id, guild);
+    }
+
+    public String getBotsAutoRole(String id) {
+        ensureExistence(id);
+        return retrieveGuild(id).getString(AUTOROLE_BOTS);
+    }
+
+    public void setBotsAutoRole(String id, String value) {
+        ensureExistence(id);
+        Document guild = retrieveGuild(id);
+        guild.put(AUTOROLE_BOTS, value);
         update(id, guild);
     }
 

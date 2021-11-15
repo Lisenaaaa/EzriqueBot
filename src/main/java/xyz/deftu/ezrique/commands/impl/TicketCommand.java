@@ -1,4 +1,4 @@
-package xyz.deftu.ezrique.commands.impl.tickets;
+package xyz.deftu.ezrique.commands.impl;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
@@ -11,8 +11,12 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.Button;
 import xyz.deftu.ezrique.Ezrique;
 import xyz.deftu.ezrique.commands.ICommand;
+import xyz.deftu.ezrique.tickets.TicketHandler;
+import xyz.deftu.ezrique.util.EmojiHelper;
 import xyz.deftu.ezrique.util.IdentificationHelper;
 import xyz.deftu.ezrique.util.TextHelper;
 
@@ -30,6 +34,10 @@ public class TicketCommand implements ICommand {
                         ),
                         new SubcommandData("close", "Closes the ticket this command is run in.").addOptions(
                                 new OptionData(OptionType.STRING, "reason", "The reason this ticket was closed.")
+                        ),
+                        new SubcommandData("menu", "Creates a ticket menu.").addOptions(
+                                new OptionData(OptionType.STRING, "content", "The content inside the ticket menu.", true),
+                                new OptionData(OptionType.STRING, "name", "The name of the ticket menu.")
                         )
                 )
                 .addSubcommandGroups(
@@ -61,16 +69,20 @@ public class TicketCommand implements ICommand {
             switch (event.getSubcommandName()) {
                 case "new":
                 case "create":
-                    handleCreate(instance, event, reasonMapping == null ? null : reasonMapping.getAsString());
+                    handleCreate(instance, event, reasonMapping == null ? "No reason provided." : reasonMapping.getAsString());
                     break;
                 case "close":
-                    handleClose(instance, event, reasonMapping == null ? null : reasonMapping.getAsString());
+                    handleClose(instance, event, reasonMapping == null ? "No reason provided." : reasonMapping.getAsString());
+                    break;
+                case "menu":
+                    OptionMapping nameMapping = event.getOption("name");
+                    handleMenu(instance, event, nameMapping == null ? null : nameMapping.getAsString(), event.getOption("content").getAsString());
                     break;
                 case "toggle":
                     handleToggle(instance, event, event.getOption("value").getAsBoolean());
                     break;
                 case "name":
-                    OptionMapping nameMapping = event.getOption("name");
+                    nameMapping = event.getOption("name");
                     handleName(instance, event, nameMapping == null ? null : nameMapping.getAsString());
                     break;
                 case "role":
@@ -90,6 +102,29 @@ public class TicketCommand implements ICommand {
 
     private void handleClose(Ezrique instance, SlashCommandEvent event, String reason) {
         TicketHandler.getInstance().close(event.getGuild(), event.getTextChannel(), event.getMember(), reason, event.deferReply());
+    }
+
+    private void handleMenu(Ezrique instance, SlashCommandEvent event, String name, String content) {
+        if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+            content = content.replace("\\n", "\n");
+            if (content.length() > 2000) {
+                event.reply("The content of a ticket menu cannot be longer than 2000 characters.").setEphemeral(true).queue();
+            } else {
+                EmbedBuilder embedBuilder = instance.getComponentCreator().createEmbed(event.getJDA());
+                if (name != null) {
+                    embedBuilder.setTitle(name);
+                }
+
+                embedBuilder.setDescription(content);
+                ActionRow actionRow = ActionRow.of(
+                        Button.danger("ticketmenu|" + event.getChannel().getId(), "Open a ticket").withEmoji(EmojiHelper.fromUnicode("\uD83C\uDFAB"))
+                );
+
+                event.getChannel().sendMessage(new MessageBuilder().setEmbeds(embedBuilder.build()).setActionRows(actionRow).build()).queue();
+            }
+        } else {
+            event.reply(TextHelper.buildFailure("Only members with the `Administrator` permission can use this command.")).queue();
+        }
     }
 
     private void handleToggle(Ezrique instance, SlashCommandEvent event, boolean toggle) {

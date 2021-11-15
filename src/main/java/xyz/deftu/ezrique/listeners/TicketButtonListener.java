@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 import xyz.deftu.ezrique.Ezrique;
-import xyz.deftu.ezrique.commands.impl.tickets.TicketHandler;
+import xyz.deftu.ezrique.tickets.TicketHandler;
 import xyz.deftu.ezrique.util.IdentificationHelper;
 import xyz.deftu.ezrique.util.TextHelper;
 
@@ -30,45 +30,51 @@ public class TicketButtonListener extends ListenerBase {
 
                 String reason = TicketHandler.getInstance().getOpenConfirmation(member.getIdLong());
 
-                Category category = guild.getCategoryById(instance.getConfigManager().getGuild().getTicketCategory(guild.getId()));
-                if (category == null) {
-                    reply.setContent(TextHelper.buildFailure("Cannot find this server's ticket category.")).queue();
-                } else {
-                    try {
-                        TextChannel channel = category.createTextChannel(instance.getConfigManager().getGuild().getTicketName(guild.getId())
-                                        .replace("{name}", member.getUser().getName())
-                                        .replace("{id}", member.getId())
-                                        .replace("{uuid}", IdentificationHelper.generateUuid()))
-                                .setTopic("Ticket created by " + member.getUser().getAsTag() + ". (" + member.getId() + ")")
-                                .syncPermissionOverrides()
-                                .complete();
-                        channel.putPermissionOverride(guild.getPublicRole()).setDeny(Permission.VIEW_CHANNEL).queue();
-                        channel.putPermissionOverride(member).setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_HISTORY, Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_READ, Permission.MESSAGE_EMBED_LINKS, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_EXT_STICKER, Permission.MESSAGE_WRITE).queue();
+                if (reason != null) {
+                    Category category = guild.getCategoryById(instance.getConfigManager().getGuild().getTicketCategory(guild.getId()));
+                    if (category == null) {
+                        reply.setContent(TextHelper.buildFailure("Cannot find this server's ticket category.")).queue();
+                    } else {
+                        try {
+                            TextChannel channel = category.createTextChannel(instance.getConfigManager().getGuild().getTicketName(guild.getId())
+                                            .replace("{name}", member.getUser().getName())
+                                            .replace("{id}", member.getId())
+                                            .replace("{uuid}", IdentificationHelper.generateUuid()))
+                                    .setTopic("Ticket created by " + member.getUser().getAsTag() + ". (" + member.getId() + ")")
+                                    .syncPermissionOverrides()
+                                    .complete();
+                            channel.putPermissionOverride(guild.getPublicRole()).setDeny(Permission.VIEW_CHANNEL).queue();
+                            channel.putPermissionOverride(member).setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_HISTORY, Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_READ, Permission.MESSAGE_EMBED_LINKS, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_EXT_STICKER, Permission.MESSAGE_WRITE).queue();
 
-                        MessageBuilder messageBuilder = new MessageBuilder();
-                        if (instance.getConfigManager().getGuild().hasTicketRole(guild.getId())) {
-                            Role role = guild.getRoleById(instance.getConfigManager().getGuild().getTicketRole(guild.getId()));
-                            if (role == null) {
-                                messageBuilder.append("Could not find this server's ticket role.");
-                            } else {
-                                messageBuilder.append(role.getAsMention());
+                            MessageBuilder messageBuilder = new MessageBuilder();
+                            if (instance.getConfigManager().getGuild().hasTicketRole(guild.getId())) {
+                                Role role = guild.getRoleById(instance.getConfigManager().getGuild().getTicketRole(guild.getId()));
+                                if (role == null) {
+                                    messageBuilder.append("Could not find this server's ticket role.");
+                                } else {
+                                    messageBuilder.append(role.getAsMention());
+                                }
+                            }
+
+                            EmbedBuilder embed = instance.getComponentCreator().createEmbed(guild.getJDA());
+                            if (reason != null) {
+                                embed.addField("Reason", reason, false);
+                            }
+
+                            embed.addField("User", String.format("**Created:** <t:%s:f>\n**Joined:** <t:%s:f>", member.getTimeCreated().toEpochSecond(), member.getTimeJoined().toEpochSecond()), false);
+
+                            channel.sendMessage(messageBuilder.setEmbeds(embed.build()).setActionRows(ActionRow.of(Button.danger("ticket|close|" + channel.getId(), "Close"))).build()).queue();
+                            reply.setContent(TextHelper.buildSuccess("Successfully created ticket. " + channel.getAsMention())).setEphemeral(true).queue();
+
+                            TicketHandler.getInstance().invalidateOpenConfirmation(member.getIdLong());
+                        } catch (Exception e) {
+                            if (e instanceof InsufficientPermissionException) {
+                                reply.setContent(TextHelper.buildFailure("Unable to create ticket because I don't have permission to do so! Please contact a server admin.")).queue();
                             }
                         }
-
-                        EmbedBuilder embed = instance.getComponentCreator().createEmbed(guild.getJDA());
-                        if (reason != null) {
-                            embed.addField("Reason", reason, false);
-                        }
-
-                        embed.addField("User", String.format("**Created:** <t:%s:f>\n**Joined:** <t:%s:f>", member.getTimeCreated().toEpochSecond(), member.getTimeJoined().toEpochSecond()), false);
-
-                        channel.sendMessage(messageBuilder.setEmbeds(embed.build()).setActionRows(ActionRow.of(Button.danger("ticket|close|" + channel.getId(), "Close"))).build()).queue();
-                        reply.setContent(TextHelper.buildSuccess("Successfully created ticket. " + channel.getAsMention())).setEphemeral(true).queue();
-                    } catch (Exception e) {
-                        if (e instanceof InsufficientPermissionException) {
-                            reply.setContent(TextHelper.buildFailure("Unable to create ticket because I don't have permission to do so! Please contact a server admin.")).queue();
-                        }
                     }
+                } else {
+                    event.reply(TextHelper.buildFailure("This confirmation is invalid.")).setEphemeral(true).queue();
                 }
             }
 
@@ -77,23 +83,28 @@ public class TicketButtonListener extends ListenerBase {
             }
 
             if (id.startsWith("ticket|close|confirmation|")) {
-                if (id.contains("accept")) {
-                    String reason = TicketHandler.getInstance().getCloseConfirmation(event.getChannel().getIdLong());
-                    event.getTextChannel().delete().reason("Ticket closed" + (reason == null ? "" : " - " + reason)).queue();
-                    try {
-                        TextChannel channel = event.getTextChannel();
-                        String topic = channel.getTopic();
-                        Member member = event.getGuild().getMemberById(topic.substring(channel.getTopic().lastIndexOf("(")).replace("(", "").replace(")", ""));
-                        PrivateChannel privateChannel = member.getUser().openPrivateChannel().complete();
-                        privateChannel.sendMessage("Your ticket in " + event.getGuild().getName() + " (" + event.getTextChannel().getName() + ") was deleted." + (reason == null ? "" : "\n**Reason:** " + reason)).queue(message -> {}, throwable -> {});
-                    } catch (Exception ignored) {
-                    }
-                }
+                String reason = TicketHandler.getInstance().getCloseConfirmation(event.getChannel().getIdLong());
 
-                if (id.contains("deny")) {
-                    TicketHandler.getInstance().removeConfirmation(event.getTextChannel().getIdLong());
-                    event.reply(TextHelper.buildFailure("Cancelled.")).queue();
-                    event.getMessage().delete().queue();
+                if (reason != null) {
+                    if (id.contains("accept")) {
+                        event.getTextChannel().delete().reason("Ticket closed" + (reason == null ? "" : " - " + reason)).queue();
+                        try {
+                            TextChannel channel = event.getTextChannel();
+                            String topic = channel.getTopic();
+                            Member member = event.getGuild().getMemberById(topic.substring(channel.getTopic().lastIndexOf("(")).replace("(", "").replace(")", ""));
+                            PrivateChannel privateChannel = member.getUser().openPrivateChannel().complete();
+                            privateChannel.sendMessage("Your ticket in " + event.getGuild().getName() + " (" + event.getTextChannel().getName() + ") was deleted." + (reason == null ? "" : "\n**Reason:** " + reason)).queue(message -> {}, throwable -> {});
+                        } catch (Exception ignored) {
+                        }
+                    }
+
+                    if (id.contains("deny")) {
+                        event.reply(TextHelper.buildFailure("Cancelled.")).setEphemeral(true).queue();
+                    }
+
+                    TicketHandler.getInstance().invalidateCloseConfirmation(event.getChannel().getIdLong());
+                } else {
+                    event.reply(TextHelper.buildFailure("This confirmation is invalid.")).setEphemeral(true).queue();
                 }
             }
         }

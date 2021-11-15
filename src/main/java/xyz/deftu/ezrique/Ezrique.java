@@ -11,19 +11,21 @@ import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.discordbots.api.client.DiscordBotListAPI;
 import xyz.deftu.ezrique.commands.CommandManager;
 import xyz.deftu.ezrique.commands.impl.*;
-import xyz.deftu.ezrique.commands.impl.exclusive.qalcyo.QalcyoTicketsCommand;
 import xyz.deftu.ezrique.commands.impl.exclusive.testingserver.TestingServerCommand;
-import xyz.deftu.ezrique.commands.impl.tickets.TicketCommand;
+import xyz.deftu.ezrique.commands.impl.TicketCommand;
 import xyz.deftu.ezrique.component.ComponentCreator;
 import xyz.deftu.ezrique.config.ConfigManager;
 import xyz.deftu.ezrique.config.impl.GuildConfig;
 import xyz.deftu.ezrique.listeners.*;
-import xyz.deftu.ezrique.listeners.exclusive.qalcyo.QalcyoTicketsListener;
+import xyz.deftu.ezrique.listeners.TicketMenuListener;
 import xyz.deftu.ezrique.mongo.MongoConnection;
+import xyz.qalcyo.mango.Multithreading;
 
 import java.time.OffsetDateTime;
+import java.util.concurrent.TimeUnit;
 
 public class Ezrique extends Thread {
 
@@ -35,6 +37,7 @@ public class Ezrique extends Thread {
     private ConfigManager configManager;
 
     private ShardManager api;
+    private DiscordBotListAPI dbl;
 
     private CommandManager commandManager;
     private ListenerManager listenerManager;
@@ -60,8 +63,17 @@ public class Ezrique extends Thread {
                 .setChunkingFilter(ChunkingFilter.ALL)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .build();
+        if (!metadata.isBeta()) {
+            dbl = new DiscordBotListAPI.Builder()
+                    .token(metadata.getDblToken())
+                    .botId(api.getShardById(0).getSelfUser().getApplicationId())
+                    .build();
+            dbl.setStats((int) api.getGuildCache().size());
+            Multithreading.schedule(() -> dbl.setStats((int) api.getGuildCache().size()), 30, TimeUnit.MINUTES);
+        }
 
         commandManager = new CommandManager();
+        commandManager.addCommand(new AutoRoleCommand());
         commandManager.addCommand(new EmojiCommand());
         commandManager.addCommand(new HelpCommand());
         commandManager.addCommand(new LeaveMessageCommand());
@@ -72,16 +84,15 @@ public class Ezrique extends Thread {
         commandManager.addCommand(new TicketCommand());
         commandManager.addCommand(new WelcomeMessageCommand());
 
-        commandManager.addCommand(new QalcyoTicketsCommand());
         commandManager.addCommand(new TestingServerCommand());
         commandManager.initialize(api);
 
         listenerManager = new ListenerManager();
+        listenerManager.addListener("AUTO_ROLE", new AutoRoleListener());
         listenerManager.addListener("GUILD_ADD_MESSAGE", new GuildAddMessageListener());
         listenerManager.addListener("GUILD_JOIN_LEAVE", new GuildJoinLeaveListener());
         listenerManager.addListener("TICKET_BUTTON", new TicketButtonListener());
-
-        listenerManager.addListener("QALCYO_TICKETS", new QalcyoTicketsListener());
+        listenerManager.addListener("TICKET_MENU", new TicketMenuListener());
         listenerManager.initialize(api);
 
         componentCreator = new ComponentCreator(this);
@@ -122,6 +133,10 @@ public class Ezrique extends Thread {
 
     public ShardManager getApi() {
         return api;
+    }
+
+    public DiscordBotListAPI getDbl() {
+        return dbl;
     }
 
     public ListenerManager getListenerManager() {

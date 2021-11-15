@@ -1,5 +1,7 @@
-package xyz.deftu.ezrique.commands.impl.tickets;
+package xyz.deftu.ezrique.tickets;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -8,14 +10,13 @@ import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 import xyz.deftu.ezrique.Ezrique;
 import xyz.deftu.ezrique.util.TextHelper;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class TicketHandler {
 
     private static final TicketHandler INSTANCE = new TicketHandler();
-    private final Map<Long, String> openConfirmations = new HashMap<>();
-    private final Map<Long, String> closeConfirmations = new HashMap<>();
+    private final Cache<Long, String> openConfirmations = createCache();
+    private final Cache<Long, String> closeConfirmations = createCache();
 
     public void open(Guild guild, Member member, String reason, ReplyAction reply) {
         Ezrique instance = Ezrique.getInstance();
@@ -44,23 +45,32 @@ public class TicketHandler {
                         Button.success("ticket|close|confirmation|accept|" + channel.getId(), "Confirm"),
                         Button.danger("ticket|close|confirmation|deny|" + channel.getId(), "Deny")
                 )
+                .setEphemeral(true)
                 .queue();
     }
 
     public String getOpenConfirmation(long id) {
-        return openConfirmations.get(id);
+        return openConfirmations.getIfPresent(id);
     }
 
     public String getCloseConfirmation(long id) {
-        return closeConfirmations.get(id);
+        return closeConfirmations.getIfPresent(id);
     }
 
-    public void removeConfirmation(long id) {
-        closeConfirmations.remove(id);
+    public void invalidateOpenConfirmation(long id) {
+        openConfirmations.invalidate(id);
+    }
+
+    public void invalidateCloseConfirmation(long id) {
+        closeConfirmations.invalidate(id);
     }
 
     public static TicketHandler getInstance() {
         return INSTANCE;
+    }
+
+    private static <K, V> Cache<K, V> createCache() {
+        return Caffeine.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).build();
     }
 
 }

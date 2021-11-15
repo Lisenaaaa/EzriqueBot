@@ -14,7 +14,7 @@ public class ConfigManager {
 
     public void initialize(Ezrique instance) {
         for (IConfigObject configuration : configurations) {
-            MongoDatabase database = instance.getMongoConnection().getConfigurationsClient().getDatabase("configurations");
+            MongoDatabase database = instance.getMongoConnection().getClient().getDatabase("configurations");
             if (!database.listCollectionNames().into(new ArrayList<>()).contains(configuration.getName())) {
                 database.createCollection(configuration.getName());
             }

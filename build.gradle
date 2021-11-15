@@ -38,6 +38,13 @@ configurations {
 }
 
 dependencies {
+    shade('net.dv8tion:JDA:4.3.0_346')
+    shade('org.discordbots:DBL-Java-Library:2.0.1')
+    shade('com.sparkjava:spark-core:2.9.3')
+    shade('org.mongodb:mongodb-driver-sync:4.3.4')
+
+    shade('com.github.ben-manes.caffeine:caffeine:2.9.2')
+
     shade('xyz.qalcyo.simpleconfig:SimpleConfig:3.5')
     shade('xyz.qalcyo.simpleconfig:SimpleConfig:3.5:settings')
     shade('xyz.qalcyo.json:JSON+:2.12')
@@ -50,12 +57,6 @@ dependencies {
     shade('org.apache.logging.log4j:log4j-api:2.14.1')
     shade('org.apache.logging.log4j:log4j-core:2.14.1')
     shade('org.apache.logging.log4j:log4j-slf4j18-impl:2.14.1')
-
-    shade('com.github.ben-manes.caffeine:caffeine:2.9.2')
-
-    shade('net.dv8tion:JDA:4.3.0_346')
-    shade('org.discordbots:DBL-Java-Library:2.0.1')
-    shade('org.mongodb:mongodb-driver-sync:4.3.4')
 }
 
 jar {

@@ -22,6 +22,8 @@ import xyz.deftu.ezrique.config.impl.GuildConfig;
 import xyz.deftu.ezrique.listeners.*;
 import xyz.deftu.ezrique.listeners.TicketMenuListener;
 import xyz.deftu.ezrique.mongo.MongoConnection;
+import xyz.deftu.ezrique.networking.GitHubEndpoint;
+import xyz.deftu.ezrique.networking.NetworkManager;
 import xyz.qalcyo.mango.Multithreading;
 
 import java.time.OffsetDateTime;
@@ -38,6 +40,7 @@ public class Ezrique extends Thread {
 
     private ShardManager api;
     private DiscordBotListAPI dbl;
+    private NetworkManager networkManager;
 
     private CommandManager commandManager;
     private ListenerManager listenerManager;
@@ -71,6 +74,10 @@ public class Ezrique extends Thread {
             dbl.setStats((int) api.getGuildCache().size());
             Multithreading.schedule(() -> dbl.setStats((int) api.getGuildCache().size()), 30, TimeUnit.MINUTES);
         }
+
+        networkManager = new NetworkManager();
+        networkManager.addEndpoint(new GitHubEndpoint());
+        networkManager.initialize();
 
         commandManager = new CommandManager();
         commandManager.addCommand(new AutoRoleCommand());
@@ -127,16 +134,20 @@ public class Ezrique extends Thread {
         return configManager;
     }
 
-    public CommandManager getCommandManager() {
-        return commandManager;
-    }
-
     public ShardManager getApi() {
         return api;
     }
 
     public DiscordBotListAPI getDbl() {
         return dbl;
+    }
+
+    public NetworkManager getNetworkManager() {
+        return networkManager;
+    }
+
+    public CommandManager getCommandManager() {
+        return commandManager;
     }
 
     public ListenerManager getListenerManager() {

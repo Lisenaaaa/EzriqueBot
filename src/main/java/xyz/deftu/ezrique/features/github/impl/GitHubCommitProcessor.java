@@ -16,7 +16,12 @@ public class GitHubCommitProcessor implements IGitHubProcessor {
     public EmbedBuilder process(Ezrique instance, JsonObject object, Guild guild) {
         EmbedBuilder value = new EmbedBuilder();
 
+        JsonObject repository = object.getAsObject("repository");
+        JsonObject sender = object.getAsObject("sender");
         JsonArray commits = object.getAsArray("commits");
+
+        value.setTitle(repository.getAsString("full_name"), repository.getAsString("html_url"));
+        value.setAuthor(sender.getAsString("login"), sender.getAsString("html_url"), sender.getAsString("avatar_url"));
         for (JsonElement element : commits) {
             boolean last = commits.indexOf(element) == commits.size();
             if (element.isJsonObject()) {

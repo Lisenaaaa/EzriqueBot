@@ -17,7 +17,7 @@ public class GitHubStarProcessor implements IGitHubProcessor {
         JsonObject repository = object.getAsObject("repository");
         JsonObject sender = object.getAsObject("sender");
 
-        value.setAuthor(sender.getAsString("login"), sender.getAsString("url"), sender.getAsString("avatar_url"));
+        value.setAuthor(sender.getAsString("login"), sender.getAsString("html_url"), sender.getAsString("avatar_url"));
         value.setTitle(repository.getAsString("full_name"), repository.getAsString("html_url"));
         value.appendDescription(object.getAsString("starred_at").equals("null") ? "Star removed." : "New star added!");
 

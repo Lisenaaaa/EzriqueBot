@@ -121,6 +121,7 @@ public class TicketCommand implements ICommand {
                 );
 
                 event.getChannel().sendMessage(new MessageBuilder().setEmbeds(embedBuilder.build()).setActionRows(actionRow).build()).queue();
+                event.deferReply().complete().deleteOriginal().queue();
             }
         } else {
             event.reply(TextHelper.buildFailure("Only members with the `Administrator` permission can use this command.")).queue();

@@ -39,14 +39,19 @@ public class TicketHandler {
     }
 
     public void close(Guild guild, TextChannel channel, Member member, String reason, ReplyAction reply) {
-        closeConfirmations.put(channel.getIdLong(), reason);
-        reply.setContent("Are you sure you want to close this ticket?" + (reason == null ? "" : "\n**Reason:** " + reason))
-                .addActionRow(
-                        Button.success("ticket|close|confirmation|accept|" + channel.getId(), "Confirm"),
-                        Button.danger("ticket|close|confirmation|deny|" + channel.getId(), "Deny")
-                )
-                .setEphemeral(true)
-                .queue();
+        String topic = channel.getTopic();
+        if (topic != null && topic.startsWith("Ticket created by")) {
+            closeConfirmations.put(channel.getIdLong(), reason);
+            reply.setContent("Are you sure you want to close this ticket?" + (reason == null ? "" : "\n**Reason:** " + reason))
+                    .addActionRow(
+                            Button.success("ticket|close|confirmation|accept|" + channel.getId(), "Confirm"),
+                            Button.danger("ticket|close|confirmation|deny|" + channel.getId(), "Deny")
+                    )
+                    .setEphemeral(true)
+                    .queue();
+        } else {
+            reply.setContent(TextHelper.buildFailure("This is not a ticket!")).setEphemeral(true).queue();
+        }
     }
 
     public String getOpenConfirmation(long id) {

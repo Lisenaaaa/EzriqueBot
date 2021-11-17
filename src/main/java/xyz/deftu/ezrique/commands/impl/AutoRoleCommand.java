@@ -39,11 +39,11 @@ public class AutoRoleCommand implements ICommand {
             boolean toggle = toggleMapping != null && toggleMapping.getAsBoolean();
 
             if (event.getGuild().getBotRole().canInteract(role)) {
-                String reply = "Set autorole for " + (bots ? "bots" : "members") + " to " + role.getName();
+                String reply = "Set autorole for " + (bots ? "bots" : "members") + " to " + role.getAsMention();
                 updateRole(instance, event.getGuild(), role, bots);
                 if (toggleMapping != null) {
                     updateToggle(instance, event.getGuild(), toggle, bots);
-                    reply += "\nSet toggle to: " + toggle;
+                    reply += "\nSet toggle to " + (toggle ? "on" : "off");
                 }
 
                 event.reply(reply).queue();

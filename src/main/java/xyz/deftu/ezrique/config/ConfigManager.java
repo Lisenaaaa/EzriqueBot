@@ -1,6 +1,8 @@
 package xyz.deftu.ezrique.config;
 
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
 import xyz.deftu.ezrique.Ezrique;
 import xyz.deftu.ezrique.config.impl.GuildConfig;
 
@@ -20,6 +22,20 @@ public class ConfigManager {
             }
 
             configuration.initialize(instance, database, database.getCollection(configuration.getName()));
+            initialize(instance, configuration);
+        }
+    }
+
+    private void initialize(Ezrique instance, IConfigObject object) {
+        if (object instanceof IConfigChild) {
+            ((IConfigChild) object).initialize(instance, object.getParent());
+        }
+
+        List<IConfigChild> children = object.getChildren();
+        if (children != null && !children.isEmpty()) {
+            for (IConfigChild child : children) {
+                initialize(instance, child);
+            }
         }
     }
 

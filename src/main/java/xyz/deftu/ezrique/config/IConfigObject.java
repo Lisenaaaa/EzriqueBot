@@ -8,10 +8,15 @@ import xyz.deftu.ezrique.Ezrique;
 import java.util.List;
 
 public interface IConfigObject {
+
     String getName();
     List<IConfigChild> getChildren();
 
     void initialize(Ezrique instance, MongoDatabase database, MongoCollection<Document> collection);
+
+    default IConfigObject getParent() {
+        throw new UnsupportedOperationException();
+    }
 
     default void addChild(IConfigChild child) {
         List<IConfigChild> children = getChildren();
@@ -21,4 +26,5 @@ public interface IConfigObject {
             throw new UnsupportedOperationException("This configuration object does not support child objects.");
         }
     }
+
 }

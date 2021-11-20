@@ -45,6 +45,8 @@ public class EmojiCommand implements ICommand {
                     handleRemove(instance, event, event.getOption("identifier").getAsString());
                     break;
             }
+        } else {
+            event.reply(TextHelper.buildFailure("This command can only be ran in servers!")).queue();
         }
     }
 

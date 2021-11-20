@@ -15,13 +15,17 @@ public class NukeCommand implements ICommand {
     }
 
     public void execute(Ezrique instance, SlashCommandEvent event) {
-        if (event.getMember().hasPermission(Permission.MANAGE_CHANNEL, Permission.MESSAGE_MANAGE)) {
-            TextChannel old = event.getTextChannel();
-            TextChannel copy = old.createCopy().setPosition(old.getPosition()).complete();
-            old.delete().reason("Nuked.").queue();
-            copy.sendMessage(TextHelper.buildSuccess("Nuked channel.")).queue();
+        if (event.isFromGuild()) {
+            if (event.getMember().hasPermission(Permission.MANAGE_CHANNEL, Permission.MESSAGE_MANAGE)) {
+                TextChannel old = event.getTextChannel();
+                TextChannel copy = old.createCopy().setPosition(old.getPosition()).complete();
+                old.delete().reason("Nuked.").queue();
+                copy.sendMessage(TextHelper.buildSuccess("Nuked channel.")).queue();
+            } else {
+                event.reply("Only members with the `Manage channels` and `Manage messages` permissions can use this command.").queue();
+            }
         } else {
-            event.reply("Only members with the `Manage channels` and `Manage messages` permissions can use this command.").queue();
+            event.reply(TextHelper.buildFailure("This command can only be ran in servers!")).queue();
         }
     }
 

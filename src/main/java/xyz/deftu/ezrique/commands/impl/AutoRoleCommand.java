@@ -57,17 +57,17 @@ public class AutoRoleCommand implements ICommand {
 
     private void updateRole(Ezrique instance, Guild guild, Role role, boolean bots) {
         if (bots) {
-            instance.getConfigManager().getGuild().setBotsAutoRole(guild.getId(), role.getId());
+            instance.getConfigManager().getGuild().getAutoRole().getBots().setRole(guild.getId(), role.getId());
         } else {
-            instance.getConfigManager().getGuild().setAutoRole(guild.getId(), role.getId());
+            instance.getConfigManager().getGuild().getAutoRole().getMembers().setRole(guild.getId(), role.getId());
         }
     }
 
     private void updateToggle(Ezrique instance, Guild guild, boolean toggle, boolean bots) {
         if (bots) {
-            instance.getConfigManager().getGuild().setBotsAutoRoleToggle(guild.getId(), toggle);
+            instance.getConfigManager().getGuild().getAutoRole().getBots().setToggle(guild.getId(), toggle);
         } else {
-            instance.getConfigManager().getGuild().setAutoRoleToggle(guild.getId(), toggle);
+            instance.getConfigManager().getGuild().getAutoRole().getMembers().setToggle(guild.getId(), toggle);
         }
     }
 

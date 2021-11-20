@@ -1,9 +1,18 @@
 package xyz.deftu.ezrique.config;
 
-import xyz.qalcyo.simpleconfig.Configuration;
-import xyz.qalcyo.simpleconfig.Subconfiguration;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
+import xyz.deftu.ezrique.Ezrique;
 
 public interface IConfigChild extends IConfigObject {
     String getName();
-    void initialize(Configuration configuration, Subconfiguration self);
+
+    void initialize(Ezrique instance, IConfigObject parent);
+
+    IConfigObject getParent();
+
+    default void initialize(Ezrique instance, MongoDatabase database, MongoCollection<Document> collection) {
+    }
+
 }

@@ -14,13 +14,13 @@ public class AutoRoleListener extends ListenerBase {
         Guild guild = event.getGuild();
         String guildId = guild.getId();
         GuildConfig guildConfig = Ezrique.getInstance().getConfigManager().getGuild();
-        if (event.getUser().isBot() && guildConfig.hasBotsAutoRole(guildId)) {
-            Role role = guild.getRoleById(guildConfig.getBotsAutoRole(guildId));
+        if (event.getUser().isBot() && guildConfig.getAutoRole().getBots().isAvailable(guildId)) {
+            Role role = guild.getRoleById(guildConfig.getAutoRole().getBots().getRole(guildId));
             if (role != null) {
                 guild.addRoleToMember(event.getUser().getId(), role).reason("AutoRole feature").queue();
             }
-        } else if (guildConfig.hasAutoRole(guildId)) {
-            Role role = guild.getRoleById(guildConfig.getAutoRole(guildId));
+        } else if (guildConfig.getAutoRole().getMembers().isAvailable(guildId)) {
+            Role role = guild.getRoleById(guildConfig.getAutoRole().getMembers().getRole(guildId));
             if (role != null) {
                 guild.addRoleToMember(event.getUser().getId(), role).reason("AutoRole feature").queue();
             }

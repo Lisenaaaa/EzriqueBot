@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.apache.logging.log4j.LogManager;
@@ -53,14 +54,36 @@ public class CommandManager {
     private void onGuildReady(GuildReadyEvent event) {
         Guild guild = event.getGuild();
         long id = guild.getIdLong();
-        if (awaitingUpsertion.containsKey(id)) {
-            CommandListUpdateAction guildUpdateAction = guild.updateCommands();
-            for (ICommand command : awaitingUpsertion.get(id)) {
-                guildUpdateAction.addCommands(command.getData());
+        new Thread(() -> {
+            Logger logger = LogManager.getLogger();
+
+            List<String> excluded = new ArrayList<>();
+            if (awaitingUpsertion.containsKey(id)) {
+                CommandListUpdateAction guildUpdateAction = guild.updateCommands();
+                for (ICommand command : awaitingUpsertion.get(id)) {
+                    guildUpdateAction.addCommands(command.getData());
+                    excluded.add(command.getData().getName());
+                }
+
+                List<Command> commands = guildUpdateAction.complete();
+                logger.info("Inserted {} command(s) into \"{}\" ({}) - {}", commands.size(), guild.getName(), id, commands.toString());
             }
 
-            guildUpdateAction.queue();
-        }
+            List<Command> commands = guild.retrieveCommands().complete();
+            if (!commands.isEmpty()) {
+                List<Command> removed = new ArrayList<>();
+                for (Command command : commands) {
+                    if (!excluded.contains(command.getName())) {
+                        removed.add(command);
+                        command.delete().queue();
+                    }
+                }
+
+                if (!removed.isEmpty()) {
+                    logger.info("Deleted {} from \"{}\" ({}) - {}", removed.size(), guild.getName(), id, removed.toString());
+                }
+            }
+        }, guild.getName() + " (" + id + ") ready thread").start();
     }
 
     @SubscribeEvent

@@ -18,9 +18,12 @@ repositories {
     mavenCentral()
 
     maven {
-        name = 'Qalcyo'
-        url = 'http://maven.deftu.xyz/repository/maven-public/'
-        allowInsecureProtocol = true
+        name = "SpongePowered Stable"
+        url = "https://repo.spongepowered.org/maven/"
+    }
+    maven {
+        name = "SpongePowered Snapshot"
+        url = "https://repo.spongepowered.org/repository/maven-public/"
     }
     maven {
         name = 'Dv8tion'
@@ -29,6 +32,12 @@ repositories {
     maven {
         name = 'JitPack'
         url = 'https://jitpack.io/'
+    }
+
+    maven {
+        name = 'Qalcyo'
+        url = 'http://maven.deftu.xyz/repository/maven-public/'
+        allowInsecureProtocol = true
     }
 }
 

@@ -8,7 +8,7 @@ import xyz.deftu.ezrique.config.impl.GuildConfig;
 
 import java.util.List;
 
-public class GuildWelcomeChannelConfig implements IConfigChild {
+public class WelcomeChannelConfig implements IConfigChild {
 
     private GuildConfig parent;
 
@@ -21,34 +21,52 @@ public class GuildWelcomeChannelConfig implements IConfigChild {
     }
 
     public boolean isAvailable(String id) {
-        Document guild = parent.retrieveGuild(id);
+        Document guild = retrieve(id);
         return guild.containsKey("toggle") && guild.getBoolean("toggle") && guild.containsKey("channel") && guild.containsKey("message");
     }
 
     public String getChannel(String id) {
-        return parent.retrieveGuild(id).getString("channel");
+        return retrieve(id).getString("channel");
     }
 
     public void setChannel(String id, String value) {
-        Document guild = parent.retrieveGuild(id);
+        Document guild = retrieve(id);
         guild.put("channel", value);
-        parent.update(id, guild);
+        update(id, guild);
     }
 
     public void setToggle(String id, boolean value) {
-        Document document = parent.retrieveGuild(id);
+        Document document = retrieve(id);
         document.put("toggle", value);
-        parent.update(id, document);
+        update(id, document);
     }
 
     public String getMessage(String id) {
-        return parent.retrieveGuild(id).getString("message");
+        return retrieve(id).getString("message");
     }
 
     public void setMessage(String id, String value) {
-        Document document = parent.retrieveGuild(id);
+        Document document = retrieve(id);
         document.put("message", value);
-        parent.update(id, document);
+        update(id, document);
+    }
+
+    private Document retrieve(String id) {
+        Document guild = parent.retrieveGuild(id);
+        if (guild == null) {
+            Document created = new Document().append("identifier", id);
+            parent.getCollection().insertOne(created);
+            guild = created;
+        }
+
+        guild.putIfAbsent(getName(), new Document());
+        return guild.get(getName(), Document.class);
+    }
+
+    private void update(String id, Document self) {
+        Document parent = this.parent.retrieveGuild(id);
+        parent.put(getName(), self);
+        this.parent.update(id, parent);
     }
 
     public GuildConfig getParent() {

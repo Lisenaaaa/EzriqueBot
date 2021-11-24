@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Button;
 import xyz.deftu.ezrique.Ezrique;
@@ -34,6 +35,15 @@ public class HelpCommand implements ICommand {
             if (subcommands.isEmpty()) {
                 appendCommand(embedBuilder, command.getData().getName(), command.getData().getDescription());
             } else {
+                for (SubcommandGroupData group : command.getData().getSubcommandGroups()) {
+                    for (SubcommandData subcommand : group.getSubcommands()) {
+                        embedBuilder.appendDescription("**/").appendDescription(command.getData().getName()).appendDescription(" ").appendDescription(group.getName()).appendDescription(" ").appendDescription(subcommand.getName()).appendDescription("** - ").appendDescription(subcommand.getDescription());
+                        if (group.getSubcommands().indexOf(subcommand) != group.getSubcommands().size() - 1) {
+                            embedBuilder.appendDescription("\n");
+                        }
+                    }
+                }
+
                 for (SubcommandData subcommand : subcommands) {
                     embedBuilder.appendDescription("**/").appendDescription(command.getData().getName()).appendDescription(" ").appendDescription(subcommand.getName()).appendDescription("** - ").appendDescription(subcommand.getDescription());
                     if (subcommands.indexOf(subcommand) != subcommands.size() - 1) {

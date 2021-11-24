@@ -68,7 +68,7 @@ public class EmojiCommand implements ICommand {
 
                 Guild guild = event.getGuild();
                 Emote emote = guild.createEmote(name, Icon.from(httpClient.newCall(httpRequest.build()).execute().body().byteStream())).complete();
-                event.reply(TextHelper.buildSuccess("Successfully added emoji. - " + emote.getAsMention())).queue();
+                event.reply(TextHelper.buildSuccess("Successfully added emoji. [" + emote.getAsMention() + "]")).queue();
             } catch (Exception e) {
                 event.reply(TextHelper.buildFailure("Failed to add emoji.")).setEphemeral(true).queue();
             }

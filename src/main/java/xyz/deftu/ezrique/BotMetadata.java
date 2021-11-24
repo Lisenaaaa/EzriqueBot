@@ -16,6 +16,9 @@ public class BotMetadata {
 
     private String ownerId;
 
+    private String primaryGuildId;
+    private String errorLogId;
+
     private String dblToken;
 
     public void initialize() {
@@ -26,6 +29,9 @@ public class BotMetadata {
         mongoPassword = getAndCheck("mongo_password").getAsString();
 
         ownerId = getAndCheck("owner_id").getAsString();
+
+        primaryGuildId = getAndCheck("primary_guild_id").getAsString();
+        errorLogId = getAndCheck("error_log_id").getAsString();
 
         dblToken = getAndCheck("dbl_token").getAsString();
     }
@@ -50,6 +56,14 @@ public class BotMetadata {
 
     public String getOwnerId() {
         return ownerId;
+    }
+
+    public String getPrimaryGuildId() {
+        return primaryGuildId;
+    }
+
+    public String getErrorLogId() {
+        return errorLogId;
     }
 
     public String getDblToken() {

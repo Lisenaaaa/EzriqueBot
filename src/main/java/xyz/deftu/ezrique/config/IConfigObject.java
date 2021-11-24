@@ -21,6 +21,7 @@ public interface IConfigObject {
     default void addChild(IConfigChild child) {
         List<IConfigChild> children = getChildren();
         if (children != null) {
+            child.initialize(Ezrique.getInstance(), this);
             children.add(child);
         } else {
             throw new UnsupportedOperationException("This configuration object does not support child objects.");

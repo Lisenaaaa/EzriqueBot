@@ -10,11 +10,11 @@ public class GuildJoinLeaveListener extends ListenerBase {
 
     @SubscribeEvent
     private void onGuildJoin(GuildMemberJoinEvent event) {
-        if (ezrique.getConfigManager().getGuild().hasWelcomeChannel(event.getGuild().getId()) && ezrique.getConfigManager().getGuild().hasWelcomeMessage(event.getGuild().getId())) {
-            GuildChannel channel = event.getGuild().getGuildChannelById(ezrique.getConfigManager().getGuild().getWelcomeChannel(event.getGuild().getId()));
+        if (ezrique.getConfigManager().getGuild().getWelcomeChannel().isAvailable(event.getGuild().getId())) {
+            GuildChannel channel = event.getGuild().getGuildChannelById(ezrique.getConfigManager().getGuild().getWelcomeChannel().getChannel(event.getGuild().getId()));
             if (channel != null) {
                 if (channel instanceof TextChannel) {
-                    ((TextChannel) channel).sendMessage(ezrique.getConfigManager().getGuild().getWelcomeMessage(event.getGuild().getId())
+                    ((TextChannel) channel).sendMessage(ezrique.getConfigManager().getGuild().getWelcomeChannel().getMessage(event.getGuild().getId())
                             .replace("{member.mention}", event.getMember().getAsMention())
                             .replace("{member.tag}", event.getMember().getUser().getAsTag())
                             .replace("{member.name}", event.getMember().getUser().getName())
@@ -36,11 +36,11 @@ public class GuildJoinLeaveListener extends ListenerBase {
 
     @SubscribeEvent
     private void onGuildRemove(GuildMemberRemoveEvent event) {
-        if (ezrique.getConfigManager().getGuild().hasLeaveChannel(event.getGuild().getId()) && ezrique.getConfigManager().getGuild().hasLeaveMessage(event.getGuild().getId())) {
-            GuildChannel channel = event.getGuild().getGuildChannelById(ezrique.getConfigManager().getGuild().getLeaveChannel(event.getGuild().getId()));
+        if (ezrique.getConfigManager().getGuild().getLeaveChannel().isAvailable(event.getGuild().getId())) {
+            GuildChannel channel = event.getGuild().getGuildChannelById(ezrique.getConfigManager().getGuild().getLeaveChannel().getChannel(event.getGuild().getId()));
             if (channel != null) {
                 if (channel instanceof TextChannel) {
-                    ((TextChannel) channel).sendMessage(ezrique.getConfigManager().getGuild().getLeaveMessage(event.getGuild().getId())
+                    ((TextChannel) channel).sendMessage(ezrique.getConfigManager().getGuild().getLeaveChannel().getMessage(event.getGuild().getId())
                             .replace("{member.mention}", event.getMember().getAsMention())
                             .replace("{member.tag}", event.getMember().getUser().getAsTag())
                             .replace("{member.name}", event.getMember().getUser().getName())

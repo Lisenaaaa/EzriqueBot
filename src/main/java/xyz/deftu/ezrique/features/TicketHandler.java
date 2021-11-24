@@ -1,33 +1,26 @@
 package xyz.deftu.ezrique.features;
 
 import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 import xyz.deftu.ezrique.Ezrique;
+import xyz.deftu.ezrique.util.CacheHelper;
 import xyz.deftu.ezrique.util.TextHelper;
-
-import java.util.concurrent.TimeUnit;
 
 public class TicketHandler {
 
     private static final TicketHandler INSTANCE = new TicketHandler();
-    private final Cache<Long, String> openConfirmations = createCache();
-    private final Cache<Long, String> closeConfirmations = createCache();
+    private final Cache<Long, String> openConfirmations = CacheHelper.createCache();
+    private final Cache<Long, String> closeConfirmations = CacheHelper.createCache();
 
     public void open(Guild guild, Member member, String reason, ReplyAction reply) {
         Ezrique instance = Ezrique.getInstance();
 
-        if (!instance.getConfigManager().getGuild().hasTickets(guild.getId())) {
-            reply.setContent(TextHelper.buildFailure("This server has tickets disabled.")).queue();
-            return;
-        }
-
-        if (!instance.getConfigManager().getGuild().hasTicketCategory(guild.getId())) {
-            reply.setContent(TextHelper.buildFailure("This server does not have a ticket category.")).queue();
+        if (!instance.getConfigManager().getGuild().getTickets().isAvailable(guild.getId())) {
+            reply.setContent(TextHelper.buildFailure("This server does not have tickets set up.")).queue();
             return;
         }
 
@@ -72,10 +65,6 @@ public class TicketHandler {
 
     public static TicketHandler getInstance() {
         return INSTANCE;
-    }
-
-    private static <K, V> Cache<K, V> createCache() {
-        return Caffeine.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).build();
     }
 
 }

@@ -7,17 +7,15 @@ import org.bson.Document;
 import xyz.deftu.ezrique.Ezrique;
 import xyz.deftu.ezrique.config.IConfigChild;
 import xyz.deftu.ezrique.config.IConfigObject;
-import xyz.deftu.ezrique.config.impl.guild.GuildAutoRoleConfig;
-import xyz.deftu.ezrique.config.impl.guild.GuildWelcomeChannelConfig;
+import xyz.deftu.ezrique.config.impl.guild.AutoRoleConfig;
+import xyz.deftu.ezrique.config.impl.guild.LeaveChannelConfig;
+import xyz.deftu.ezrique.config.impl.guild.TicketConfig;
+import xyz.deftu.ezrique.config.impl.guild.WelcomeChannelConfig;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GuildConfig implements IConfigObject {
-
-    private static final String LEAVE_CHANNEL = "leave_channel";
-    private static final String LEAVE_MESSAGE = "leave_message";
-    private static final String LEAVE_MESSAGE_TOGGLE = "leave_message_toggle";
 
     private static final String TICKET_TOGGLE = "ticket_toggle";
     private static final String TICKET_NAME = "ticket_name";
@@ -31,8 +29,10 @@ public class GuildConfig implements IConfigObject {
     private final List<IConfigChild> children = new ArrayList<>();
 
     /* Children */
-    private GuildWelcomeChannelConfig welcomeChannel;
-    private GuildAutoRoleConfig autorole;
+    private WelcomeChannelConfig welcomeChannel;
+    private LeaveChannelConfig leaveChannel;
+    private TicketConfig tickets;
+    private AutoRoleConfig autorole;
 
     public String getName() {
         return "guilds";
@@ -42,180 +42,41 @@ public class GuildConfig implements IConfigObject {
         this.instance = instance;
         this.collection = collection;
 
-        addChild(welcomeChannel = new GuildWelcomeChannelConfig());
-        addChild(autorole = new GuildAutoRoleConfig());
+        addChild(welcomeChannel = new WelcomeChannelConfig());
+        addChild(leaveChannel = new LeaveChannelConfig());
+        addChild(tickets = new TicketConfig());
+        addChild(autorole = new AutoRoleConfig());
     }
 
     public void update(String id, Document updated) {
         collection.replaceOne(Filters.eq("identifier", id), updated);
     }
 
-    public boolean hasLeaveChannel(String id) {
-        checks(id);
-        Document guild = retrieveGuild(id);
-        return guild.containsKey(LEAVE_MESSAGE_TOGGLE) && guild.getBoolean(LEAVE_MESSAGE_TOGGLE) && guild.containsKey(LEAVE_CHANNEL);
-    }
-
-    public String getLeaveChannel(String id) {
-        checks(id);
-        return retrieveGuild(id).getString(LEAVE_CHANNEL);
-    }
-
-    public void setLeaveChannel(String id, String value) {
-        checks(id);
-        Document guild = retrieveGuild(id);
-        guild.put(LEAVE_CHANNEL, value);
-        update(id, guild);
-    }
-
-    public boolean hasLeaveMessage(String id) {
-        checks(id);
-        Document guild = retrieveGuild(id);
-        return guild.containsKey(LEAVE_MESSAGE_TOGGLE) && guild.getBoolean(LEAVE_MESSAGE_TOGGLE) && guild.containsKey(LEAVE_MESSAGE);
-    }
-
-    public void setLeaveMessageToggle(String id, boolean toggle) {
-        checks(id);
-        Document guild = retrieveGuild(id);
-        guild.put(LEAVE_MESSAGE_TOGGLE, toggle);
-        update(id, guild);
-    }
-
-    public String getLeaveMessage(String id) {
-        checks(id);
-        return retrieveGuild(id).getString(LEAVE_MESSAGE);
-    }
-
-    public void setLeaveMessage(String id, String value) {
-        checks(id);
-        Document guild = retrieveGuild(id);
-        guild.put(LEAVE_MESSAGE, value);
-        update(id, guild);
-    }
-
-    public boolean hasTickets(String id) {
-        checks(id);
-        Document guild = retrieveGuild(id);
-        return guild.containsKey(TICKET_TOGGLE) && guild.getBoolean(TICKET_TOGGLE);
-    }
-
-    public void setTicketToggle(String id, boolean value) {
-        checks(id);
-        Document guild = retrieveGuild(id);
-        guild.put(TICKET_TOGGLE, value);
-        update(id, guild);
-    }
-
-    public boolean hasTicketName(String id) {
-        checks(id);
-        return retrieveGuild(id).containsKey(TICKET_NAME);
-    }
-
-    public String getTicketName(String id) {
-        checks(id);
-        return retrieveGuild(id).getString(TICKET_NAME);
-    }
-
-    public void setTicketName(String id, String value) {
-        checks(id);
-        Document guild = retrieveGuild(id);
-        guild.put(TICKET_NAME, value);
-        update(id, guild);
-    }
-
-    public boolean hasTicketRole(String id) {
-        checks(id);
-        return retrieveGuild(id).containsKey(TICKET_ROLE);
-    }
-
-    public String getTicketRole(String id) {
-        checks(id);
-        return retrieveGuild(id).getString(TICKET_ROLE);
-    }
-
-    public void setTicketRole(String id, String value) {
-        checks(id);
-        Document guild = retrieveGuild(id);
-        guild.put(TICKET_ROLE, value);
-        update(id, guild);
-    }
-
-    public boolean hasTicketCategory(String id) {
-        checks(id);
-        return retrieveGuild(id).containsKey(TICKET_CATEGORY);
-    }
-
-    public String getTicketCategory(String id) {
-        checks(id);
-        return retrieveGuild(id).getString(TICKET_CATEGORY);
-    }
-
-    public void setTicketCategory(String id, String value) {
-        checks(id);
-        Document guild = retrieveGuild(id);
-        guild.put(TICKET_CATEGORY, value);
-        update(id, guild);
-    }
-
-    /*public boolean hasAutoRole(String id) {
-        ensureExistence(id);
-        Document guild = retrieveGuild(id);
-        return guild.getBoolean(AUTOROLE_TOGGLE) && guild.containsKey(AUTOROLE);
-    }
-
-    public void setAutoRoleToggle(String id, boolean toggle) {
-        ensureExistence(id);
-        Document guild = retrieveGuild(id);
-        guild.put(AUTOROLE_TOGGLE, toggle);
-        update(id, guild);
-    }
-
-    public String getAutoRole(String id) {
-        ensureExistence(id);
-        return retrieveGuild(id).getString(AUTOROLE);
-    }
-
-    public void setAutoRole(String id, String value) {
-        ensureExistence(id);
-        Document guild = retrieveGuild(id);
-        guild.put(AUTOROLE, value);
-        update(id, guild);
-    }
-
-    public boolean hasBotsAutoRole(String id) {
-        ensureExistence(id);
-        Document guild = retrieveGuild(id);
-        return guild.getBoolean(AUTOROLE_BOTS_TOGGLE) && guild.containsKey(AUTOROLE_BOTS);
-    }
-
-    public void setBotsAutoRoleToggle(String id, boolean toggle) {
-        ensureExistence(id);
-        Document guild = retrieveGuild(id);
-        guild.put(AUTOROLE_BOTS_TOGGLE, toggle);
-        update(id, guild);
-    }
-
-    public String getBotsAutoRole(String id) {
-        ensureExistence(id);
-        return retrieveGuild(id).getString(AUTOROLE_BOTS);
-    }
-
-    public void setBotsAutoRole(String id, String value) {
-        ensureExistence(id);
-        Document guild = retrieveGuild(id);
-        guild.put(AUTOROLE_BOTS, value);
-        update(id, guild);
-    }*/
-
     public Document retrieveGuild(String id) {
         return collection.find(Filters.eq("identifier", id)).first();
+    }
+
+    public MongoCollection<Document> getCollection() {
+        return collection;
     }
 
     public List<IConfigChild> getChildren() {
         return children;
     }
 
-    public GuildAutoRoleConfig getAutoRole() {
+    public WelcomeChannelConfig getWelcomeChannel() {
+        return welcomeChannel;
+    }
+
+    public LeaveChannelConfig getLeaveChannel() {
+        return leaveChannel;
+    }
+
+    public TicketConfig getTickets() {
+        return tickets;
+    }
+
+    public AutoRoleConfig getAutoRole() {
         return autorole;
     }
 

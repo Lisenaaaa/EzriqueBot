@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -13,6 +14,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import xyz.deftu.ezrique.Ezrique;
 import xyz.deftu.ezrique.commands.ICommand;
+import xyz.deftu.ezrique.util.TextHelper;
 
 public class LeaveMessageCommand implements ICommand {
 
@@ -30,58 +32,51 @@ public class LeaveMessageCommand implements ICommand {
         if (event.isFromGuild()) {
             if (event.getMember().hasPermission(Permission.MANAGE_SERVER)) {
                 OptionMapping toggleMapping = event.getOption("toggle");
+                boolean toggle = toggleMapping != null && toggleMapping.getAsBoolean() || instance.getConfigManager().getGuild().getLeaveChannel().isAvailable(event.getGuild().getId());
                 OptionMapping messageMapping = event.getOption("message");
+                String message = messageMapping == null ? instance.getConfigManager().getGuild().getLeaveChannel().getMessage(event.getGuild().getId()) : messageMapping.getAsString();
                 OptionMapping channelMapping = event.getOption("channel");
+                GuildChannel channel = channelMapping == null ? null : channelMapping.getAsGuildChannel();
+                if (channel == null) {
+                    String current = instance.getConfigManager().getGuild().getLeaveChannel().getChannel(event.getGuild().getId());
+                    if (current != null) {
+                        channel = event.getJDA().getGuildChannelById(current);
+                    }
+                }
 
-                String reply = "";
-                boolean shouldReply = true;
+                Message reply = null;
 
                 if (toggleMapping != null) {
-                    boolean toggle = toggleMapping.getAsBoolean();
-                    instance.getConfigManager().getGuild().setLeaveMessageToggle(event.getGuild().getId(), toggle);
-                    reply += "Changed leave message toggle to " + (toggle ? "on" : "off") + ".";
+                    instance.getConfigManager().getGuild().getLeaveChannel().setToggle(event.getGuild().getId(), toggle);
                 }
 
                 if (channelMapping != null) {
-                    GuildChannel channel = channelMapping.getAsGuildChannel();
                     if (channel instanceof TextChannel) {
-                        instance.getConfigManager().getGuild().setLeaveChannel(event.getGuild().getId(), channel.getId());
-
-                        if (!reply.isEmpty())
-                            reply += "\n\n";
-                        reply += "Set leave channel to " + channel.getAsMention() + ".";
-                    } else {
-                        if (!reply.isEmpty())
-                            reply += "\n\n";
-                        reply += "Did not set channel because it wasn't a text channel.";
+                        instance.getConfigManager().getGuild().getLeaveChannel().setChannel(event.getGuild().getId(), channel.getId());
                     }
                 }
 
                 if (messageMapping == null) {
-                    if (reply.isEmpty()) {
-                        EmbedBuilder embedBuilder = instance.getComponentCreator().createEmbed(event.getJDA());
-                        if (instance.getConfigManager().getGuild().hasLeaveMessage(event.getGuild().getId()))
-                            embedBuilder.addField("Current message", instance.getConfigManager().getGuild().getLeaveMessage(event.getGuild().getId()), false);
-                        embedBuilder.addField("Variables", retrieveVariables(event), false);
-                        event.reply(new MessageBuilder().setEmbeds(embedBuilder.build()).build()).setEphemeral(true).queue();
-                        shouldReply = false;
-                    }
+                    EmbedBuilder embedBuilder = instance.getComponentCreator().createEmbed(event.getJDA());
+                    if (instance.getConfigManager().getGuild().getLeaveChannel().isAvailable(event.getGuild().getId()))
+                        embedBuilder.addField("Current message", instance.getConfigManager().getGuild().getLeaveChannel().getMessage(event.getGuild().getId()), false);
+                    embedBuilder.addField("Variables", retrieveVariables(event), false);
+                    reply = new MessageBuilder().setEmbeds(embedBuilder.build()).build();
                 } else {
-                    String message = messageMapping.getAsString().replace("\\n", "\n");
-                    instance.getConfigManager().getGuild().setLeaveMessage(event.getGuild().getId(), message);
-                    if (!reply.isEmpty())
-                        reply += "\n\n";
-                    reply += "Set leave message to:\n" + message;
+                    instance.getConfigManager().getGuild().getLeaveChannel().setMessage(event.getGuild().getId(), message.replace("\\n", "\n"));
                 }
 
-                if (shouldReply) {
-                    event.reply(reply).setEphemeral(true).queue();
-                }
+                event.reply(reply == null ?
+                        new MessageBuilder(TextHelper.buildSuccess("Leave messages are " + (toggle ? "on" : "off") + "," +
+                                " sent to " + (channel == null ? "none" : channel.getAsMention()) + " and " +
+                                "the messages will be \"" + message + "\"."))
+                                .build() :
+                        reply).setEphemeral(true).queue();
             } else {
                 event.reply("Only members with the `Manage Server` permission can use this.").queue();
             }
         } else {
-            event.reply("This command can only be used in servers.").queue();
+            event.reply(TextHelper.buildFailure("This command can only be used in servers.")).queue();
         }
     }
 

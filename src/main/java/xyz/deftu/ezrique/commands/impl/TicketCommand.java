@@ -130,8 +130,8 @@ public class TicketCommand implements ICommand {
 
     private void handleToggle(Ezrique instance, SlashCommandEvent event, boolean toggle) {
         if (event.getMember().hasPermission(Permission.MANAGE_SERVER)) {
-            instance.getConfigManager().getGuild().setTicketToggle(event.getGuild().getId(), toggle);
-            event.reply(TextHelper.buildSuccess("Successfully set ticket toggle.")).queue();
+            instance.getConfigManager().getGuild().getTickets().setToggle(event.getGuild().getId(), toggle);
+            event.reply(TextHelper.buildSuccess("Successfully set ticket toggle.")).setEphemeral(true).queue();
         } else {
             event.reply(TextHelper.buildFailure("Only members with the `Manage server` permission can use this command.")).queue();
         }
@@ -146,15 +146,15 @@ public class TicketCommand implements ICommand {
                 variableBuilder.append("{uuid}: ").append(IdentificationHelper.generateUuid());
 
                 EmbedBuilder embedBuilder = instance.getComponentCreator().createEmbed(event.getJDA());
-                if (instance.getConfigManager().getGuild().hasTicketName(event.getGuild().getId()))
-                    embedBuilder.addField("Current name", instance.getConfigManager().getGuild().getTicketName(event.getGuild().getId()), false);
+                if (instance.getConfigManager().getGuild().getTickets().isAvailable(event.getGuild().getId()))
+                    embedBuilder.addField("Current name", instance.getConfigManager().getGuild().getTickets().getName(event.getGuild().getId()), false);
                 embedBuilder.addField("Variables", variableBuilder.toString(), false);
                 event.reply(new MessageBuilder()
                         .setEmbeds(embedBuilder.build())
                         .build()).setEphemeral(true).queue();
             } else {
-                instance.getConfigManager().getGuild().setTicketName(event.getGuild().getId(), name);
-                event.reply(TextHelper.buildSuccess("Successfully set ticket name.")).queue();
+                instance.getConfigManager().getGuild().getTickets().setName(event.getGuild().getId(), name);
+                event.reply(TextHelper.buildSuccess("Successfully set ticket name.")).setEphemeral(true).queue();
             }
         } else {
             event.reply(TextHelper.buildFailure("Only members with the `Manage server` permission can use this command.")).queue();
@@ -163,8 +163,8 @@ public class TicketCommand implements ICommand {
 
     private void handleRole(Ezrique instance, SlashCommandEvent event, Role role) {
         if (event.getMember().hasPermission(Permission.MANAGE_ROLES)) {
-            instance.getConfigManager().getGuild().setTicketRole(event.getGuild().getId(), role.getId());
-            event.reply(TextHelper.buildSuccess("Successfully set ticket role.")).queue();
+            instance.getConfigManager().getGuild().getTickets().setRole(event.getGuild().getId(), role.getId());
+            event.reply(TextHelper.buildSuccess("Successfully set ticket role.")).setEphemeral(true).queue();
         } else {
             event.reply(TextHelper.buildFailure("Only members with the `Manage roles` permission can use this command.")).queue();
         }
@@ -185,8 +185,8 @@ public class TicketCommand implements ICommand {
                 }
             }
 
-            instance.getConfigManager().getGuild().setTicketCategory(event.getGuild().getId(), id);
-            event.reply(TextHelper.buildSuccess("Successfully set ticket category.")).queue();
+            instance.getConfigManager().getGuild().getTickets().setCategory(event.getGuild().getId(), id);
+            event.reply(TextHelper.buildSuccess("Successfully set ticket category.")).setEphemeral(true).queue();
         } else {
             event.reply(TextHelper.buildFailure("Only members with the `Manage channels` permission can use this command.")).queue();
         }

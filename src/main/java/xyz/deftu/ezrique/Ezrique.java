@@ -19,6 +19,7 @@ import xyz.deftu.ezrique.commands.impl.TicketCommand;
 import xyz.deftu.ezrique.component.ComponentCreator;
 import xyz.deftu.ezrique.config.ConfigManager;
 import xyz.deftu.ezrique.config.impl.GuildConfig;
+import xyz.deftu.ezrique.features.ErrorHandler;
 import xyz.deftu.ezrique.listeners.*;
 import xyz.deftu.ezrique.listeners.TicketMenuListener;
 import xyz.deftu.ezrique.mongo.MongoConnection;
@@ -34,14 +35,20 @@ public class Ezrique extends Thread {
     private final Logger logger = LogManager.getLogger("Ezrique");
     private OffsetDateTime startTime;
 
+    /* Inner data storage. */
     private BotMetadata metadata;
     private MongoConnection mongoConnection;
     private ConfigManager configManager;
 
+    /* Core. */
     private ShardManager api;
+    private ErrorHandler errorHandler;
+
+    /* External services. */
     private DiscordBotListAPI dbl;
     private NetworkManager networkManager;
 
+    /* User interaction. */
     private CommandManager commandManager;
     private ListenerManager listenerManager;
     private ComponentCreator componentCreator;
@@ -66,6 +73,7 @@ public class Ezrique extends Thread {
                 .setChunkingFilter(ChunkingFilter.ALL)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .build();
+        errorHandler = new ErrorHandler(this);
         if (!metadata.isBeta()) {
             dbl = new DiscordBotListAPI.Builder()
                     .token(metadata.getDblToken())
@@ -111,7 +119,7 @@ public class Ezrique extends Thread {
 
     public void kill() {
         api.shutdown();
-        stop();
+        interrupt();
     }
 
     public Logger getLogger() {
@@ -138,7 +146,11 @@ public class Ezrique extends Thread {
         return api;
     }
 
-    public DiscordBotListAPI getDbl() {
+    public ErrorHandler getErrorHandler() {
+        return errorHandler;
+    }
+
+    public DiscordBotListAPI getDiscordBotList() {
         return dbl;
     }
 

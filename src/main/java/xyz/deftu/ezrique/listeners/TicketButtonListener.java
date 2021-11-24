@@ -31,12 +31,12 @@ public class TicketButtonListener extends ListenerBase {
                 String reason = TicketHandler.getInstance().getOpenConfirmation(member.getIdLong());
 
                 if (reason != null) {
-                    Category category = guild.getCategoryById(instance.getConfigManager().getGuild().getTicketCategory(guild.getId()));
+                    Category category = guild.getCategoryById(instance.getConfigManager().getGuild().getTickets().getCategory(guild.getId()));
                     if (category == null) {
                         reply.setContent(TextHelper.buildFailure("Cannot find this server's ticket category.")).queue();
                     } else {
                         try {
-                            TextChannel channel = category.createTextChannel(instance.getConfigManager().getGuild().getTicketName(guild.getId())
+                            TextChannel channel = category.createTextChannel(instance.getConfigManager().getGuild().getTickets().getName(guild.getId())
                                             .replace("{name}", member.getUser().getName())
                                             .replace("{id}", member.getId())
                                             .replace("{uuid}", IdentificationHelper.generateUuid()))
@@ -47,8 +47,8 @@ public class TicketButtonListener extends ListenerBase {
                             channel.putPermissionOverride(member).setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_HISTORY, Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_READ, Permission.MESSAGE_EMBED_LINKS, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_EXT_STICKER, Permission.MESSAGE_WRITE).queue();
 
                             MessageBuilder messageBuilder = new MessageBuilder();
-                            if (instance.getConfigManager().getGuild().hasTicketRole(guild.getId())) {
-                                Role role = guild.getRoleById(instance.getConfigManager().getGuild().getTicketRole(guild.getId()));
+                            if (instance.getConfigManager().getGuild().getTickets().isRoleAvailable(guild.getId())) {
+                                Role role = guild.getRoleById(instance.getConfigManager().getGuild().getTickets().getRole(guild.getId()));
                                 if (role == null) {
                                     messageBuilder.append("Could not find this server's ticket role.");
                                 } else {

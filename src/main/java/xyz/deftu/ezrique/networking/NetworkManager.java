@@ -9,8 +9,15 @@ public class NetworkManager {
 
     private final List<IEndpoint> endpoints = new ArrayList<>();
 
-    public void initialize() {
-        Spark.port(4357);
+    public void initialize(int port) {
+        try {
+            if (Spark.port() != port) {
+                Spark.port(4357);
+            }
+        } catch (Exception e) {
+            Spark.port(4357);
+        }
+
         for (IEndpoint endpoint : endpoints) {
             initializeEndpoint("/", endpoint);
         }

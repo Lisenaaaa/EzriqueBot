@@ -12,6 +12,10 @@ public class Bootstrap {
     }
 
     public static void restart() {
+        for (int i = 0; i < 100; i++) {
+            System.out.println();
+        }
+
         bot.kill();
         (bot = new Ezrique()).start();
     }

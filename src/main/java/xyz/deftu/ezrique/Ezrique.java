@@ -87,10 +87,11 @@ public class Ezrique extends Thread {
 
         networkManager = new NetworkManager();
         networkManager.addEndpoint(new StatsEndpoint());
-        networkManager.initialize();
+        networkManager.initialize(4357);
 
         commandManager = new CommandManager();
         commandManager.addCommand(new AutoRoleCommand());
+        commandManager.addCommand(new EmbedCommand());
         commandManager.addCommand(new EmojiCommand());
         commandManager.addCommand(new HelpCommand());
         commandManager.addCommand(new LeaveMessageCommand());

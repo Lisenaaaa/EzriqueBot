@@ -142,7 +142,7 @@ public class TicketCommand implements ICommand {
         if (event.getMember().hasPermission(Permission.MANAGE_SERVER)) {
             if (name == null) {
                 StringBuilder variableBuilder = new StringBuilder();
-                variableBuilder.append("{name}: ").append(event.getMember().getUser().getName()).append("\n");
+                variableBuilder.append("{name}: ").append(event.getMember().getUser().getName().replaceAll("\\P{Print}", "").replaceAll(" ", "-")).append("\n");
                 variableBuilder.append("{id}: ").append(event.getMember().getId()).append("\n");
                 variableBuilder.append("{uuid}: ").append(IdentificationHelper.generateUuid());
 

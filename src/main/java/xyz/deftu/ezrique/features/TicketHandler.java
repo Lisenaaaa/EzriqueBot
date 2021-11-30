@@ -8,9 +8,11 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 import xyz.deftu.ezrique.Ezrique;
 import xyz.deftu.ezrique.util.CacheHelper;
+import xyz.deftu.ezrique.util.ChannelHelper;
 import xyz.deftu.ezrique.util.IdentificationHelper;
 import xyz.deftu.ezrique.util.TextHelper;
 
@@ -47,7 +49,7 @@ public class TicketHandler {
             } else {
                 try {
                     TextChannel channel = category.createTextChannel(instance.getConfigManager().getGuild().getTickets().getName(guild.getId())
-                                    .replace("{name}", member.getUser().getName())
+                                    .replace("{name}", member.getUser().getName().replaceAll("\\P{Print}", "").replaceAll(" ", "-"))
                                     .replace("{id}", member.getId())
                                     .replace("{uuid}", IdentificationHelper.generateUuid()))
                             .setTopic("Ticket created by " + member.getUser().getAsTag() + ". (" + member.getId() + ")")
@@ -108,14 +110,24 @@ public class TicketHandler {
     public void closeAccept(Guild guild, Member member, TextChannel channel, ReplyAction reply) {
         String reason = getCloseConfirmation(channel.getIdLong());
         if (reason != null) {
-            channel.delete().reason("Ticket closed" + (reason == null ? "" : " - " + reason)).queue();
             try {
                 String topic = channel.getTopic();
                 Member creator = guild.getMemberById(topic.substring(channel.getTopic().lastIndexOf("(")).replace("(", "").replace(")", ""));
                 PrivateChannel privateChannel = creator.getUser().openPrivateChannel().complete();
-                privateChannel.sendMessage("Your ticket in " + guild.getName() + " (" + privateChannel.getName() + ") was closed by **" + member.getUser().getAsTag() + "**." + (reason == null ? "" : "\n**Reason:** " + reason)).queue(message -> {}, throwable -> {});
-            } catch (Exception ignored) {
+                String archive = ChannelHelper.archive(channel);
+                MessageAction action = privateChannel.sendMessage("Your ticket in " + guild.getName() + " (" + channel.getName() + ") was closed by **" + member.getUser().getAsTag() + "**." + (reason == null ? "" : "\n**Reason:** " + reason));
+                if (archive != null) {
+                    action.setActionRow(
+                            Button.link(archive, "Transcript")
+                    );
+                }
+
+                action.queue(message -> {}, throwable -> {});
+            } catch (Exception e) {
+                Ezrique.getInstance().getErrorHandler().handle(e);
             }
+
+            channel.delete().reason("Ticket closed" + (reason == null ? "" : " - " + reason)).queue();
         } else {
             reply.setContent(TextHelper.buildFailure("This confirmation is invalid.")).setEphemeral(true).queue();
         }

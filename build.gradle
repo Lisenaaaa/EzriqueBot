@@ -50,6 +50,9 @@ dependencies {
     shade('net.dv8tion:JDA:5.0.0-alpha.1')
     shade('org.mongodb:mongodb-driver-sync:4.4.0')
 
+    shade('org.apache.commons:commons-lang3:3.12.0')
+    shade('commons-validator:commons-validator:1.7')
+
     shade('com.github.ben-manes.caffeine:caffeine:2.9.2')
 
     shade('xyz.qalcyo.simpleconfig:SimpleConfig:3.5')

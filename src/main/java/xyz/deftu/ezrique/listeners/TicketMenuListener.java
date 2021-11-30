@@ -12,7 +12,7 @@ public class TicketMenuListener extends ListenerBase {
         if (event.isFromGuild()) {
             Button button = event.getButton();
             if (button.getId().startsWith("ticketmenu")) {
-                TicketHandler.getInstance().open(event.getGuild(), event.getMember(), "Ticket opened via ticket menu button.", event.deferReply());
+                TicketHandler.getInstance().confirmOpen(event.getGuild(), event.getMember(), "Ticket opened via ticket menu button.", event.deferReply());
             }
         }
     }

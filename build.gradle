@@ -47,7 +47,7 @@ configurations {
 }
 
 dependencies {
-    shade('net.dv8tion:JDA:4.3.0_346')
+    shade('net.dv8tion:JDA:5.0.0-alpha.1')
     shade('org.mongodb:mongodb-driver-sync:4.4.0')
 
     shade('com.github.ben-manes.caffeine:caffeine:2.9.2')

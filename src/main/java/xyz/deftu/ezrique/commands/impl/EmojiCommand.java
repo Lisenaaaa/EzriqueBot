@@ -51,7 +51,7 @@ public class EmojiCommand implements ICommand {
     }
 
     private void handleAdd(Ezrique instance, SlashCommandEvent event, String name, String emoji) {
-        if (event.getMember().hasPermission(Permission.MANAGE_EMOTES)) {
+        if (event.getMember().hasPermission(Permission.MANAGE_EMOTES_AND_STICKERS)) {
             try {
                 OkHttpClient httpClient = new OkHttpClient();
                 Request.Builder httpRequest = new Request.Builder()
@@ -78,7 +78,7 @@ public class EmojiCommand implements ICommand {
     }
 
     private void handleRemove(Ezrique instance, SlashCommandEvent event, String identifier) {
-        if (event.getMember().hasPermission(Permission.MANAGE_EMOTES)) {
+        if (event.getMember().hasPermission(Permission.MANAGE_EMOTES_AND_STICKERS)) {
             Guild guild = event.getGuild();
             Emote emote = null;
             if (identifier.startsWith("<") && identifier.endsWith(">")) {

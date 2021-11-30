@@ -8,7 +8,7 @@ public class MongoConnection {
     private final MongoClient client;
 
     public MongoConnection(String username, String password) {
-        client = MongoHelper.createClient(username, password, "cluster-0", "configurations");
+        client = MongoHelper.createClient(username, password, "cluster-0");
     }
 
     public MongoClient getClient() {

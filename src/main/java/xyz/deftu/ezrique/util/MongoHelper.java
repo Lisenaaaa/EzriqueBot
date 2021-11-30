@@ -41,8 +41,8 @@ public class MongoHelper {
         return returned;
     }
 
-    public static MongoClient createClient(String username, String password, String cluster, String database) {
-        ConnectionString connectionString = new ConnectionString(String.format("mongodb+srv://%s:%s@%s.2s9b7.mongodb.net/%s?retryWrites=true&w=majority", username, password, cluster, database));
+    public static MongoClient createClient(String username, String password, String cluster) {
+        ConnectionString connectionString = new ConnectionString(String.format("mongodb+srv://%s:%s@%s.2s9b7.mongodb.net", username, password, cluster));
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyToSocketSettings(builder -> builder.applySettings(SocketSettings.builder()
                         .connectTimeout(1, TimeUnit.MINUTES)

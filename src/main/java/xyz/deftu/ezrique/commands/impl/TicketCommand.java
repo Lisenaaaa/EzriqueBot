@@ -58,6 +58,7 @@ public class TicketCommand implements ICommand {
                                         new SubcommandData("category", "The category tickets will be created in.")
                                                 .addOptions(
                                                         new OptionData(OptionType.CHANNEL, "category", "The category tickets will be made in.", true)
+                                                                .setChannelTypes(ChannelType.CATEGORY)
                                                 )
                                 )
                 );
@@ -97,11 +98,11 @@ public class TicketCommand implements ICommand {
     }
 
     private void handleCreate(Ezrique instance, SlashCommandEvent event, String reason) {
-        TicketHandler.getInstance().open(event.getGuild(), event.getMember(), reason, event.deferReply());
+        TicketHandler.getInstance().confirmOpen(event.getGuild(), event.getMember(), reason, event.deferReply());
     }
 
     private void handleClose(Ezrique instance, SlashCommandEvent event, String reason) {
-        TicketHandler.getInstance().close(event.getGuild(), event.getTextChannel(), event.getMember(), reason, event.deferReply());
+        TicketHandler.getInstance().confirmClose(event.getGuild(), event.getTextChannel(), event.getMember(), reason, event.deferReply());
     }
 
     private void handleMenu(Ezrique instance, SlashCommandEvent event, String name, String content) {
@@ -172,19 +173,7 @@ public class TicketCommand implements ICommand {
 
     private void handleCategory(Ezrique instance, SlashCommandEvent event, GuildChannel channel) {
         if (event.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
-            String id;
-            if (channel instanceof Category) {
-                id = channel.getId();
-            } else {
-                Category parent = channel.getParent();
-                if (parent == null) {
-                    event.reply(TextHelper.buildFailure("Category does not exist.")).queue();
-                    return;
-                } else {
-                    id = parent.getId();
-                }
-            }
-
+            String id = channel.getId();
             instance.getConfigManager().getGuild().getTickets().setCategory(event.getGuild().getId(), id);
             event.reply(TextHelper.buildSuccess("Successfully set ticket category.")).setEphemeral(true).queue();
         } else {

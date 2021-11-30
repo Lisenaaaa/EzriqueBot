@@ -73,6 +73,8 @@ public class Ezrique extends Thread {
                 .setChunkingFilter(ChunkingFilter.ALL)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .build();
+        JDA shard0 = api.getShardById(0);
+        logger.info("Logged in as " + shard0.getSelfUser().getAsTag());
         errorHandler = new ErrorHandler(this);
         if (!metadata.isBeta()) {
             dbl = new DiscordBotListAPI.Builder()

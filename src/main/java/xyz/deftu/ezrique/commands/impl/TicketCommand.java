@@ -18,6 +18,7 @@ import xyz.deftu.ezrique.commands.ICommand;
 import xyz.deftu.ezrique.features.TicketHandler;
 import xyz.deftu.ezrique.util.EmojiHelper;
 import xyz.deftu.ezrique.util.IdentificationHelper;
+import xyz.deftu.ezrique.util.PermissionHelper;
 import xyz.deftu.ezrique.util.TextHelper;
 
 public class TicketCommand implements ICommand {
@@ -29,15 +30,22 @@ public class TicketCommand implements ICommand {
                                 .addOptions(
                                         new OptionData(OptionType.STRING, "reason", "The reason this ticket was opened.")
                                 ),
-                        new SubcommandData("create", "Creates a new ticket.").addOptions(
+                        new SubcommandData("create", "Creates a new ticket.")
+                                .addOptions(
                                 new OptionData(OptionType.STRING, "reason", "The reason this ticket was opened.")
                         ),
-                        new SubcommandData("close", "Closes the ticket this command is run in.").addOptions(
+                        new SubcommandData("close", "Closes the ticket this command is run in.")
+                                .addOptions(
                                 new OptionData(OptionType.STRING, "reason", "The reason this ticket was closed.")
                         ),
-                        new SubcommandData("menu", "Creates a ticket menu.").addOptions(
-                                new OptionData(OptionType.STRING, "content", "The content inside the ticket menu.", true),
-                                new OptionData(OptionType.STRING, "name", "The name of the ticket menu.")
+                        new SubcommandData("add", "Adds a user to the current ticket.")
+                                .addOptions(
+                                        new OptionData(OptionType.USER, "user", "The user to add to this ticket.", true)
+                        ),
+                        new SubcommandData("menu", "Creates a ticket menu.")
+                                .addOptions(
+                                        new OptionData(OptionType.STRING, "content", "The content inside the ticket menu.", true),
+                                        new OptionData(OptionType.STRING, "name", "The name of the ticket menu.")
                         )
                 )
                 .addSubcommandGroups(
@@ -58,7 +66,6 @@ public class TicketCommand implements ICommand {
                                         new SubcommandData("category", "The category tickets will be created in.")
                                                 .addOptions(
                                                         new OptionData(OptionType.CHANNEL, "category", "The category tickets will be made in.", true)
-                                                                .setChannelTypes(ChannelType.CATEGORY)
                                                 )
                                 )
                 );
@@ -74,6 +81,9 @@ public class TicketCommand implements ICommand {
                     break;
                 case "close":
                     handleClose(instance, event, reasonMapping == null ? "No reason provided." : reasonMapping.getAsString());
+                    break;
+                case "add":
+                    handleAdd(instance, event, event.getOption("user").getAsUser());
                     break;
                 case "menu":
                     OptionMapping nameMapping = event.getOption("name");
@@ -91,6 +101,7 @@ public class TicketCommand implements ICommand {
                     break;
                 case "category":
                     handleCategory(instance, event, event.getOption("category").getAsGuildChannel());
+                    break;
             }
         } else {
             event.reply(TextHelper.buildFailure("This command can only be ran in servers!")).queue();
@@ -103,6 +114,32 @@ public class TicketCommand implements ICommand {
 
     private void handleClose(Ezrique instance, SlashCommandEvent event, String reason) {
         TicketHandler.getInstance().confirmClose(event.getGuild(), event.getTextChannel(), event.getMember(), reason, event.deferReply());
+    }
+
+    private void handleAdd(Ezrique instance, SlashCommandEvent event, User user) {
+        TextChannel channel = event.getTextChannel();
+        String topic = channel.getTopic();
+        if (topic != null && topic.startsWith("Ticket created by")) {
+            Member userMember = event.getGuild().getMember(user);
+            if (userMember != null) {
+                Member author = event.getGuild().getMemberById(topic.substring(channel.getTopic().lastIndexOf("(")).replace("(", "").replace(")", ""));
+                Member member = event.getMember();
+
+                String supportRole = instance.getConfigManager().getGuild().getTickets().getRole(event.getGuild().getId());
+                boolean support = supportRole != null && member.getRoles().contains(event.getGuild().getRoleById(supportRole));
+
+                if (member.getId().equals(author.getId()) || support || member.hasPermission(Permission.MANAGE_SERVER) || member.hasPermission(Permission.MANAGE_ROLES) || member.hasPermission(Permission.MANAGE_CHANNEL)) {
+                    channel.putPermissionOverride(event.getGuild().getMember(user)).setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_HISTORY, Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_ATTACH_FILES, Permission.VIEW_CHANNEL, Permission.MESSAGE_EMBED_LINKS, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_EXT_STICKER, Permission.MESSAGE_SEND).queue();
+                    event.reply(TextHelper.buildSuccess("Successfully added **" + user.getAsTag() + "** to this ticket.")).queue();
+                } else {
+                    event.reply(TextHelper.buildFailure("You don't have permission to use this command.")).queue();
+                }
+            } else {
+                event.reply(TextHelper.buildFailure("Failed to find member.")).queue();
+            }
+        } else {
+            event.reply(TextHelper.buildFailure("This does not appear to be a ticket.")).queue();
+        }
     }
 
     private void handleMenu(Ezrique instance, SlashCommandEvent event, String name, String content) {
@@ -125,7 +162,7 @@ public class TicketCommand implements ICommand {
                 event.deferReply().complete().deleteOriginal().queue();
             }
         } else {
-            event.reply(TextHelper.buildFailure("Only members with the `Administrator` permission can use this command.")).queue();
+            event.reply(TextHelper.buildFailure(PermissionHelper.getInvalidPermissionsMessage(Permission.ADMINISTRATOR))).queue();
         }
     }
 
@@ -134,7 +171,7 @@ public class TicketCommand implements ICommand {
             instance.getConfigManager().getGuild().getTickets().setToggle(event.getGuild().getId(), toggle);
             event.reply(TextHelper.buildSuccess("Successfully set ticket toggle.")).setEphemeral(true).queue();
         } else {
-            event.reply(TextHelper.buildFailure("Only members with the `Manage server` permission can use this command.")).queue();
+            event.reply(TextHelper.buildFailure(PermissionHelper.getInvalidPermissionsMessage(Permission.MANAGE_SERVER))).queue();
         }
     }
 
@@ -158,7 +195,7 @@ public class TicketCommand implements ICommand {
                 event.reply(TextHelper.buildSuccess("Successfully set ticket name.")).setEphemeral(true).queue();
             }
         } else {
-            event.reply(TextHelper.buildFailure("Only members with the `Manage server` permission can use this command.")).queue();
+            event.reply(TextHelper.buildFailure(PermissionHelper.getInvalidPermissionsMessage(Permission.MANAGE_SERVER))).queue();
         }
     }
 
@@ -167,17 +204,26 @@ public class TicketCommand implements ICommand {
             instance.getConfigManager().getGuild().getTickets().setRole(event.getGuild().getId(), role.getId());
             event.reply(TextHelper.buildSuccess("Successfully set ticket role.")).setEphemeral(true).queue();
         } else {
-            event.reply(TextHelper.buildFailure("Only members with the `Manage roles` permission can use this command.")).queue();
+            event.reply(TextHelper.buildFailure(PermissionHelper.getInvalidPermissionsMessage(Permission.MANAGE_ROLES))).queue();
         }
     }
 
     private void handleCategory(Ezrique instance, SlashCommandEvent event, GuildChannel channel) {
         if (event.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
-            String id = channel.getId();
+            String id;
+            if (channel instanceof ICategorizableChannel) {
+                id = ((ICategorizableChannel) channel).getParentCategoryId();
+            } else if (channel instanceof Category) {
+                id = channel.getId();
+            } else {
+                event.reply(TextHelper.buildFailure("That channel is invalid!")).setEphemeral(true).queue();
+                return;
+            }
+
             instance.getConfigManager().getGuild().getTickets().setCategory(event.getGuild().getId(), id);
             event.reply(TextHelper.buildSuccess("Successfully set ticket category.")).setEphemeral(true).queue();
         } else {
-            event.reply(TextHelper.buildFailure("Only members with the `Manage channels` permission can use this command.")).queue();
+            event.reply(TextHelper.buildFailure(PermissionHelper.getInvalidPermissionsMessage(Permission.MANAGE_CHANNEL))).queue();
         }
     }
 

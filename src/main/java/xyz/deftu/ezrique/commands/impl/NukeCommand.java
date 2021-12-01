@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import xyz.deftu.ezrique.Ezrique;
 import xyz.deftu.ezrique.commands.ICommand;
+import xyz.deftu.ezrique.util.PermissionHelper;
 import xyz.deftu.ezrique.util.TextHelper;
 
 public class NukeCommand implements ICommand {
@@ -22,7 +23,7 @@ public class NukeCommand implements ICommand {
                 old.delete().reason("Nuked.").queue();
                 copy.sendMessage(TextHelper.buildSuccess("Nuked channel.")).queue();
             } else {
-                event.reply("Only members with the `Manage channels` and `Manage messages` permissions can use this command.").queue();
+                event.reply(TextHelper.buildFailure(PermissionHelper.getInvalidPermissionsMessage(Permission.MANAGE_CHANNEL, Permission.MESSAGE_MANAGE))).queue();
             }
         } else {
             event.reply(TextHelper.buildFailure("This command can only be ran in servers!")).queue();

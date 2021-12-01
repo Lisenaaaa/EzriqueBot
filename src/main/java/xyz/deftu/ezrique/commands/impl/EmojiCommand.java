@@ -13,6 +13,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import xyz.deftu.ezrique.Ezrique;
 import xyz.deftu.ezrique.commands.ICommand;
+import xyz.deftu.ezrique.util.PermissionHelper;
 import xyz.deftu.ezrique.util.TextHelper;
 
 public class EmojiCommand implements ICommand {
@@ -73,7 +74,7 @@ public class EmojiCommand implements ICommand {
                 event.reply(TextHelper.buildFailure("Failed to add emoji.")).setEphemeral(true).queue();
             }
         } else {
-            event.reply(TextHelper.buildFailure("Only members with the `Manage emojis and stickers` permission can use this command.")).queue();
+            event.reply(TextHelper.buildFailure(PermissionHelper.getInvalidPermissionsMessage(Permission.MANAGE_EMOTES_AND_STICKERS))).queue();
         }
     }
 
@@ -107,7 +108,7 @@ public class EmojiCommand implements ICommand {
                 event.reply(TextHelper.buildFailure("Failed to find emoji.")).setEphemeral(true).queue();
             }
         } else {
-            event.reply(TextHelper.buildFailure("Only members with the `Manage emojis and stickers` permission can use this command.")).queue();
+            event.reply(TextHelper.buildFailure(PermissionHelper.getInvalidPermissionsMessage(Permission.MANAGE_EMOTES_AND_STICKERS))).queue();
         }
     }
 

@@ -91,9 +91,11 @@ public class Ezrique extends Thread {
 
         commandManager = new CommandManager();
         commandManager.addCommand(new AutoRoleCommand());
+        commandManager.addCommand(new BanCommand());
         commandManager.addCommand(new EmbedCommand());
         commandManager.addCommand(new EmojiCommand());
         commandManager.addCommand(new HelpCommand());
+        commandManager.addCommand(new KickCommand());
         commandManager.addCommand(new LeaveMessageCommand());
         commandManager.addCommand(new LinksCommand());
         commandManager.addCommand(new NukeCommand());

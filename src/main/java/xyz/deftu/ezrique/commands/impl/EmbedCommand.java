@@ -14,6 +14,7 @@ import okhttp3.Request;
 import org.apache.commons.validator.routines.UrlValidator;
 import xyz.deftu.ezrique.Ezrique;
 import xyz.deftu.ezrique.commands.ICommand;
+import xyz.deftu.ezrique.util.PermissionHelper;
 import xyz.deftu.ezrique.util.TextHelper;
 import xyz.qalcyo.mango.IO;
 
@@ -100,8 +101,10 @@ public class EmbedCommand implements ICommand {
                     event.reply("If you want to create an embed using this command, read the official Discord documentation on embed JSON schema.\nhttps://discord.com/developers/docs/resources/channel#embed-object").setEphemeral(true).queue();
                 }
             } else {
-                event.reply(TextHelper.buildFailure("Only members with the `Manage messages` permission can use this command.")).queue();
+                event.reply(TextHelper.buildFailure(PermissionHelper.getInvalidPermissionsMessage(Permission.MESSAGE_MANAGE))).queue();
             }
+        } else {
+            event.reply(TextHelper.buildFailure("This command can only be ran in servers!")).queue();
         }
     }
 

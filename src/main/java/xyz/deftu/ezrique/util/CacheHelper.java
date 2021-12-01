@@ -7,8 +7,16 @@ import java.util.concurrent.TimeUnit;
 
 public class CacheHelper {
 
+    public static <K, V> Caffeine<K, V> create(int duration, TimeUnit unit) {
+        return (Caffeine<K, V>) Caffeine.newBuilder().expireAfterWrite(duration, unit);
+    }
+
+    public static <K, V> Caffeine<K, V> create() {
+        return create(30, TimeUnit.SECONDS);
+    }
+
     public static <K, V> Cache<K, V> createCache(int duration, TimeUnit unit) {
-        return Caffeine.newBuilder().expireAfterWrite(duration, unit).build();
+        return create(duration, unit).build();
     }
 
     public static <K, V> Cache<K, V> createCache() {

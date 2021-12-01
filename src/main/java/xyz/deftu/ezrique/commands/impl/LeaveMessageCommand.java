@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import xyz.deftu.ezrique.Ezrique;
 import xyz.deftu.ezrique.commands.ICommand;
+import xyz.deftu.ezrique.util.PermissionHelper;
 import xyz.deftu.ezrique.util.TextHelper;
 
 public class LeaveMessageCommand implements ICommand {
@@ -73,7 +74,7 @@ public class LeaveMessageCommand implements ICommand {
                                 .build() :
                         reply).setEphemeral(true).queue();
             } else {
-                event.reply("Only members with the `Manage Server` permission can use this.").queue();
+                event.reply(TextHelper.buildFailure(PermissionHelper.getInvalidPermissionsMessage(Permission.MANAGE_SERVER))).queue();
             }
         } else {
             event.reply(TextHelper.buildFailure("This command can only be used in servers.")).queue();

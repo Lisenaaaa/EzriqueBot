@@ -104,7 +104,7 @@ public class TicketCommand implements ICommand {
                     break;
             }
         } else {
-            event.reply(TextHelper.buildFailure("This command can only be ran in servers!")).queue();
+            event.reply(TextHelper.failure("This command can only be ran in servers!")).queue();
         }
     }
 
@@ -130,15 +130,15 @@ public class TicketCommand implements ICommand {
 
                 if (member.getId().equals(author.getId()) || support || member.hasPermission(Permission.MANAGE_SERVER) || member.hasPermission(Permission.MANAGE_ROLES) || member.hasPermission(Permission.MANAGE_CHANNEL)) {
                     channel.putPermissionOverride(event.getGuild().getMember(user)).setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_HISTORY, Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_ATTACH_FILES, Permission.VIEW_CHANNEL, Permission.MESSAGE_EMBED_LINKS, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_EXT_STICKER, Permission.MESSAGE_SEND).queue();
-                    event.reply(TextHelper.buildSuccess("Successfully added **" + user.getAsTag() + "** to this ticket.")).queue();
+                    event.reply(TextHelper.success("Successfully added **" + user.getAsTag() + "** to this ticket.")).queue();
                 } else {
-                    event.reply(TextHelper.buildFailure("You don't have permission to use this command.")).queue();
+                    event.reply(TextHelper.failure("You don't have permission to use this command.")).queue();
                 }
             } else {
-                event.reply(TextHelper.buildFailure("Failed to find member.")).queue();
+                event.reply(TextHelper.failure("Failed to find member.")).queue();
             }
         } else {
-            event.reply(TextHelper.buildFailure("This does not appear to be a ticket.")).queue();
+            event.reply(TextHelper.failure("This does not appear to be a ticket.")).queue();
         }
     }
 
@@ -162,16 +162,16 @@ public class TicketCommand implements ICommand {
                 event.deferReply().complete().deleteOriginal().queue();
             }
         } else {
-            event.reply(TextHelper.buildFailure(PermissionHelper.getInvalidPermissionsMessage(Permission.ADMINISTRATOR))).queue();
+            event.reply(TextHelper.failure(PermissionHelper.getInvalidPermissionsMessage(Permission.ADMINISTRATOR))).queue();
         }
     }
 
     private void handleToggle(Ezrique instance, SlashCommandEvent event, boolean toggle) {
         if (event.getMember().hasPermission(Permission.MANAGE_SERVER)) {
             instance.getConfigManager().getGuild().getTickets().setToggle(event.getGuild().getId(), toggle);
-            event.reply(TextHelper.buildSuccess("Successfully set ticket toggle.")).setEphemeral(true).queue();
+            event.reply(TextHelper.success("Successfully set ticket toggle.")).setEphemeral(true).queue();
         } else {
-            event.reply(TextHelper.buildFailure(PermissionHelper.getInvalidPermissionsMessage(Permission.MANAGE_SERVER))).queue();
+            event.reply(TextHelper.failure(PermissionHelper.getInvalidPermissionsMessage(Permission.MANAGE_SERVER))).queue();
         }
     }
 
@@ -192,19 +192,19 @@ public class TicketCommand implements ICommand {
                         .build()).setEphemeral(true).queue();
             } else {
                 instance.getConfigManager().getGuild().getTickets().setName(event.getGuild().getId(), name);
-                event.reply(TextHelper.buildSuccess("Successfully set ticket name.")).setEphemeral(true).queue();
+                event.reply(TextHelper.success("Successfully set ticket name.")).setEphemeral(true).queue();
             }
         } else {
-            event.reply(TextHelper.buildFailure(PermissionHelper.getInvalidPermissionsMessage(Permission.MANAGE_SERVER))).queue();
+            event.reply(TextHelper.failure(PermissionHelper.getInvalidPermissionsMessage(Permission.MANAGE_SERVER))).queue();
         }
     }
 
     private void handleRole(Ezrique instance, SlashCommandEvent event, Role role) {
         if (event.getMember().hasPermission(Permission.MANAGE_ROLES)) {
             instance.getConfigManager().getGuild().getTickets().setRole(event.getGuild().getId(), role.getId());
-            event.reply(TextHelper.buildSuccess("Successfully set ticket role.")).setEphemeral(true).queue();
+            event.reply(TextHelper.success("Successfully set ticket role.")).setEphemeral(true).queue();
         } else {
-            event.reply(TextHelper.buildFailure(PermissionHelper.getInvalidPermissionsMessage(Permission.MANAGE_ROLES))).queue();
+            event.reply(TextHelper.failure(PermissionHelper.getInvalidPermissionsMessage(Permission.MANAGE_ROLES))).queue();
         }
     }
 
@@ -216,14 +216,14 @@ public class TicketCommand implements ICommand {
             } else if (channel instanceof Category) {
                 id = channel.getId();
             } else {
-                event.reply(TextHelper.buildFailure("That channel is invalid!")).setEphemeral(true).queue();
+                event.reply(TextHelper.failure("That channel is invalid!")).setEphemeral(true).queue();
                 return;
             }
 
             instance.getConfigManager().getGuild().getTickets().setCategory(event.getGuild().getId(), id);
-            event.reply(TextHelper.buildSuccess("Successfully set ticket category.")).setEphemeral(true).queue();
+            event.reply(TextHelper.success("Successfully set ticket category.")).setEphemeral(true).queue();
         } else {
-            event.reply(TextHelper.buildFailure(PermissionHelper.getInvalidPermissionsMessage(Permission.MANAGE_CHANNEL))).queue();
+            event.reply(TextHelper.failure(PermissionHelper.getInvalidPermissionsMessage(Permission.MANAGE_CHANNEL))).queue();
         }
     }
 

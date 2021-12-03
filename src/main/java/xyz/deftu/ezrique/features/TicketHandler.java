@@ -26,7 +26,7 @@ public class TicketHandler {
         Ezrique instance = Ezrique.getInstance();
 
         if (!instance.getConfigManager().getGuild().getTickets().isAvailable(guild.getId())) {
-            reply.setContent(TextHelper.buildFailure("This server does not have tickets set up.")).queue();
+            reply.setContent(TextHelper.failure("This server does not have tickets set up.")).queue();
             return;
         }
 
@@ -45,7 +45,7 @@ public class TicketHandler {
         if (reason != null) {
             Category category = guild.getCategoryById(instance.getConfigManager().getGuild().getTickets().getCategory(guild.getId()));
             if (category == null) {
-                reply.setContent(TextHelper.buildFailure("Cannot find this server's ticket category.")).queue();
+                reply.setContent(TextHelper.failure("Cannot find this server's ticket category.")).queue();
             } else {
                 try {
                     TextChannel channel = category.createTextChannel(instance.getConfigManager().getGuild().getTickets().getName(guild.getId())
@@ -77,17 +77,17 @@ public class TicketHandler {
                     embed.addField("User", String.format("**Created:** <t:%s:f>\n**Joined:** <t:%s:f>", member.getTimeCreated().toEpochSecond(), member.getTimeJoined().toEpochSecond()), false);
 
                     channel.sendMessage(messageBuilder.setEmbeds(embed.build()).setActionRows(ActionRow.of(Button.danger("ticket|close|" + channel.getId(), "Close"))).build()).queue();
-                    reply.setContent(TextHelper.buildSuccess("Successfully created ticket. " + channel.getAsMention())).setEphemeral(true).queue();
+                    reply.setContent(TextHelper.success("Successfully created ticket. " + channel.getAsMention())).setEphemeral(true).queue();
 
                     invalidateOpenConfirmation(member.getIdLong());
                 } catch (Exception e) {
                     if (e instanceof InsufficientPermissionException) {
-                        reply.setContent(TextHelper.buildFailure("Unable to create ticket because I don't have permission to do so! Please contact a server admin.")).queue();
+                        reply.setContent(TextHelper.failure("Unable to create ticket because I don't have permission to do so! Please contact a server admin.")).queue();
                     }
                 }
             }
         } else {
-            reply.setContent(TextHelper.buildFailure("This confirmation is invalid.")).setEphemeral(true).queue();
+            reply.setContent(TextHelper.failure("This confirmation is invalid.")).setEphemeral(true).queue();
         }
     }
 
@@ -103,7 +103,7 @@ public class TicketHandler {
                     .setEphemeral(true)
                     .queue();
         } else {
-            reply.setContent(TextHelper.buildFailure("This is not a ticket!")).setEphemeral(true).queue();
+            reply.setContent(TextHelper.failure("This is not a ticket!")).setEphemeral(true).queue();
         }
     }
 
@@ -129,12 +129,12 @@ public class TicketHandler {
 
             channel.delete().reason("Ticket closed" + (reason == null ? "" : " - " + reason)).queue();
         } else {
-            reply.setContent(TextHelper.buildFailure("This confirmation is invalid.")).setEphemeral(true).queue();
+            reply.setContent(TextHelper.failure("This confirmation is invalid.")).setEphemeral(true).queue();
         }
     }
 
     public void closeDeny(ReplyAction reply) {
-        reply.setContent(TextHelper.buildFailure("Cancelled.")).setEphemeral(true).queue();
+        reply.setContent(TextHelper.failure("Cancelled.")).setEphemeral(true).queue();
     }
 
     public String getOpenConfirmation(long id) {

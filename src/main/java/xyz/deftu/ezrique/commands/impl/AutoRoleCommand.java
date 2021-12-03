@@ -47,15 +47,15 @@ public class AutoRoleCommand implements ICommand {
                         updateToggle(instance, event.getGuild(), toggle, bots);
                     }
 
-                    event.reply(TextHelper.buildSuccess("Autorole is " + (toggle ? "on" : "off") + ", new users will " + (toggle ? "receive" : "no longer") + " receive " + role.getAsMention() + " upon join.")).setEphemeral(true).queue();
+                    event.reply(TextHelper.success("Autorole is " + (toggle ? "on" : "off") + ", new users will " + (toggle ? "receive" : "no longer") + " receive " + role.getAsMention() + " upon join.")).setEphemeral(true).queue();
                 } else {
-                    event.reply(TextHelper.buildFailure("I don't have permission to give that role to members!")).queue();
+                    event.reply(TextHelper.failure("I don't have permission to give that role to members!")).queue();
                 }
             } else {
-                event.reply(TextHelper.buildFailure(PermissionHelper.getInvalidPermissionsMessage(Permission.MANAGE_ROLES))).queue();
+                event.reply(TextHelper.failure(PermissionHelper.getInvalidPermissionsMessage(Permission.MANAGE_ROLES))).queue();
             }
         } else {
-            event.reply(TextHelper.buildFailure("This command can only be ran in servers!")).queue();
+            event.reply(TextHelper.failure("This command can only be ran in servers!")).queue();
         }
     }
 

@@ -30,15 +30,15 @@ public class TextHelper {
         return guild.getEmoteById(id).getAsMention() + " " + content;
     }
 
-    public static String buildSuccess(String content) {
+    public static String success(String content) {
         return Ezrique.getInstance().getComponentCreator().createSuccessEmote().getAsMention() + " " + content;
     }
 
-    public static String buildFailure(String content) {
+    public static String failure(String content) {
         return Ezrique.getInstance().getComponentCreator().createFailEmote().getAsMention() + " " + content;
     }
 
-    public static String dateTime(long epochSecond) {
+    public static String timestamp(long epochSecond) {
         return String.format("<t:%s:f>", epochSecond);
     }
 

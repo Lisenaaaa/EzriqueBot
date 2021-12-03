@@ -65,12 +65,12 @@ public class KickCommand implements ICommand {
                         reply += " with the reason \"" + reason + "\"";
                     if (!messageSuccess.get())
                         reply += " and was unable to message them about it";
-                    event.reply(TextHelper.buildSuccess(reply + ".")).queue();
+                    event.reply(TextHelper.success(reply + ".")).queue();
                 } else {
-                    event.reply(TextHelper.buildFailure("Failed to find member.")).queue();
+                    event.reply(TextHelper.failure("Failed to find member.")).queue();
                 }
             } else {
-                event.reply(TextHelper.buildFailure(PermissionHelper.getInvalidPermissionsMessage(Permission.KICK_MEMBERS))).queue();
+                event.reply(TextHelper.failure(PermissionHelper.getInvalidPermissionsMessage(Permission.KICK_MEMBERS))).queue();
             }
         } else {
             event.reply("Thus command ran only ran in servers!").queue();

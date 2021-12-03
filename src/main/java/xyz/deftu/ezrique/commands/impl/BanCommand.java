@@ -77,12 +77,12 @@ public class BanCommand implements ICommand {
                         reply += " and deleted all messages sent within the past " + days + " days";
                     if (!messageSuccess.get())
                         reply += " and was unable to message them about it";
-                    event.reply(TextHelper.buildSuccess(reply + ".")).queue();
+                    event.reply(TextHelper.success(reply + ".")).queue();
                 } else {
-                    event.reply(TextHelper.buildFailure("Failed to find member.")).queue();
+                    event.reply(TextHelper.failure("Failed to find member.")).queue();
                 }
             } else {
-                event.reply(TextHelper.buildFailure(PermissionHelper.getInvalidPermissionsMessage(Permission.BAN_MEMBERS))).queue();
+                event.reply(TextHelper.failure(PermissionHelper.getInvalidPermissionsMessage(Permission.BAN_MEMBERS))).queue();
             }
         } else {
             event.reply("Thus command ran only ran in servers!").queue();

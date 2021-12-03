@@ -47,7 +47,7 @@ public class EmojiCommand implements ICommand {
                     break;
             }
         } else {
-            event.reply(TextHelper.buildFailure("This command can only be ran in servers!")).queue();
+            event.reply(TextHelper.failure("This command can only be ran in servers!")).queue();
         }
     }
 
@@ -63,18 +63,18 @@ public class EmojiCommand implements ICommand {
                 } else if (emoji.startsWith("http")) {
                     httpRequest.url(emoji);
                 } else {
-                    event.reply(TextHelper.buildFailure("Unable to fetch emoji from parameter given.")).setEphemeral(true).queue();
+                    event.reply(TextHelper.failure("Unable to fetch emoji from parameter given.")).setEphemeral(true).queue();
                     return;
                 }
 
                 Guild guild = event.getGuild();
                 Emote emote = guild.createEmote(name, Icon.from(httpClient.newCall(httpRequest.build()).execute().body().byteStream())).complete();
-                event.reply(TextHelper.buildSuccess("Successfully added emoji. [" + emote.getAsMention() + "]")).queue();
+                event.reply(TextHelper.success("Successfully added emoji. [" + emote.getAsMention() + "]")).queue();
             } catch (Exception e) {
-                event.reply(TextHelper.buildFailure("Failed to add emoji.")).setEphemeral(true).queue();
+                event.reply(TextHelper.failure("Failed to add emoji.")).setEphemeral(true).queue();
             }
         } else {
-            event.reply(TextHelper.buildFailure(PermissionHelper.getInvalidPermissionsMessage(Permission.MANAGE_EMOTES_AND_STICKERS))).queue();
+            event.reply(TextHelper.failure(PermissionHelper.getInvalidPermissionsMessage(Permission.MANAGE_EMOTES_AND_STICKERS))).queue();
         }
     }
 
@@ -86,7 +86,7 @@ public class EmojiCommand implements ICommand {
                 try {
                     identifier = identifier.substring(identifier.lastIndexOf(":")).replace(":", "").replace(">", "");
                 } catch (Exception e) {
-                    event.reply(TextHelper.buildFailure("Failed to find emoji.")).setEphemeral(true).queue();
+                    event.reply(TextHelper.failure("Failed to find emoji.")).setEphemeral(true).queue();
                 }
             }
 
@@ -103,12 +103,12 @@ public class EmojiCommand implements ICommand {
 
             if (emote != null) {
                 emote.delete().queue();
-                event.reply(TextHelper.buildSuccess("Successfully removed emoji.")).queue();
+                event.reply(TextHelper.success("Successfully removed emoji.")).queue();
             } else {
-                event.reply(TextHelper.buildFailure("Failed to find emoji.")).setEphemeral(true).queue();
+                event.reply(TextHelper.failure("Failed to find emoji.")).setEphemeral(true).queue();
             }
         } else {
-            event.reply(TextHelper.buildFailure(PermissionHelper.getInvalidPermissionsMessage(Permission.MANAGE_EMOTES_AND_STICKERS))).queue();
+            event.reply(TextHelper.failure(PermissionHelper.getInvalidPermissionsMessage(Permission.MANAGE_EMOTES_AND_STICKERS))).queue();
         }
     }
 

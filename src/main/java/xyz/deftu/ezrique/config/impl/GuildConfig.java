@@ -7,20 +7,12 @@ import org.bson.Document;
 import xyz.deftu.ezrique.Ezrique;
 import xyz.deftu.ezrique.config.IConfigChild;
 import xyz.deftu.ezrique.config.IConfigObject;
-import xyz.deftu.ezrique.config.impl.guild.AutoRoleConfig;
-import xyz.deftu.ezrique.config.impl.guild.LeaveChannelConfig;
-import xyz.deftu.ezrique.config.impl.guild.TicketConfig;
-import xyz.deftu.ezrique.config.impl.guild.WelcomeChannelConfig;
+import xyz.deftu.ezrique.config.impl.guild.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GuildConfig implements IConfigObject {
-
-    private static final String TICKET_TOGGLE = "ticket_toggle";
-    private static final String TICKET_NAME = "ticket_name";
-    private static final String TICKET_ROLE = "ticket_role";
-    private static final String TICKET_CATEGORY = "ticket_category";
 
     private Ezrique instance;
 
@@ -33,6 +25,7 @@ public class GuildConfig implements IConfigObject {
     private LeaveChannelConfig leaveChannel;
     private TicketConfig tickets;
     private AutoRoleConfig autorole;
+    private PublicityConfig publicity;
 
     public String getName() {
         return "guilds";
@@ -46,6 +39,7 @@ public class GuildConfig implements IConfigObject {
         addChild(leaveChannel = new LeaveChannelConfig());
         addChild(tickets = new TicketConfig());
         addChild(autorole = new AutoRoleConfig());
+        addChild(publicity = new PublicityConfig());
     }
 
     public void update(String id, Document updated) {
@@ -78,6 +72,10 @@ public class GuildConfig implements IConfigObject {
 
     public AutoRoleConfig getAutoRole() {
         return autorole;
+    }
+
+    public PublicityConfig getPublicity() {
+        return publicity;
     }
 
 }

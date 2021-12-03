@@ -30,7 +30,7 @@ public class TicketButtonListener extends ListenerBase {
                         TicketHandler.getInstance().closeDeny(event.deferReply());
                     TicketHandler.getInstance().invalidateCloseConfirmation(event.getChannel().getIdLong());
                 } else {
-                    event.reply(TextHelper.buildFailure("This confirmation is invalid.")).setEphemeral(true).queue();
+                    event.reply(TextHelper.failure("This confirmation is invalid.")).setEphemeral(true).queue();
                 }
             }
         }

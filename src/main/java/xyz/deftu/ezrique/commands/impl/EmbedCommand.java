@@ -9,8 +9,6 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import org.apache.commons.validator.routines.UrlValidator;
 import xyz.deftu.ezrique.Ezrique;
 import xyz.deftu.ezrique.commands.ICommand;
@@ -80,31 +78,31 @@ public class EmbedCommand implements ICommand {
                                                 }
                                             }
 
-                                            event.reply(TextHelper.buildFailure("Failed to create embed from data provided." + (reason == null ? "" : "\n**Reason:** " + reason))).setEphemeral(true).queue();
+                                            event.reply(TextHelper.failure("Failed to create embed from data provided." + (reason == null ? "" : "\n**Reason:** " + reason))).setEphemeral(true).queue();
                                         }
                                     } else {
-                                        event.reply(TextHelper.buildFailure("Failed to get data from the content of that URL.")).setEphemeral(true).queue();
+                                        event.reply(TextHelper.failure("Failed to get data from the content of that URL.")).setEphemeral(true).queue();
                                     }
                                 } else {
-                                    event.reply(TextHelper.buildFailure("Failed to get content from that URL.")).setEphemeral(true).queue();
+                                    event.reply(TextHelper.failure("Failed to get content from that URL.")).setEphemeral(true).queue();
                                 }
                             } else {
-                                event.reply(TextHelper.buildFailure("This command only supports https://hst.sh/ for now.")).setEphemeral(true).queue();
+                                event.reply(TextHelper.failure("This command only supports https://hst.sh/ for now.")).setEphemeral(true).queue();
                             }
                         } else {
-                            event.reply(TextHelper.buildFailure("Failed to check domain from that URL.")).setEphemeral(true).queue();
+                            event.reply(TextHelper.failure("Failed to check domain from that URL.")).setEphemeral(true).queue();
                         }
                     } else {
-                        event.reply(TextHelper.buildFailure("That is not a valid URL.")).setEphemeral(true).queue();
+                        event.reply(TextHelper.failure("That is not a valid URL.")).setEphemeral(true).queue();
                     }
                 } else {
                     event.reply("If you want to create an embed using this command, read the official Discord documentation on embed JSON schema.\nhttps://discord.com/developers/docs/resources/channel#embed-object").setEphemeral(true).queue();
                 }
             } else {
-                event.reply(TextHelper.buildFailure(PermissionHelper.getInvalidPermissionsMessage(Permission.MESSAGE_MANAGE))).queue();
+                event.reply(TextHelper.failure(PermissionHelper.getInvalidPermissionsMessage(Permission.MESSAGE_MANAGE))).queue();
             }
         } else {
-            event.reply(TextHelper.buildFailure("This command can only be ran in servers!")).queue();
+            event.reply(TextHelper.failure("This command can only be ran in servers!")).queue();
         }
     }
 

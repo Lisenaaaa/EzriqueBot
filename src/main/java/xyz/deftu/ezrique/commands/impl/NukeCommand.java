@@ -21,12 +21,12 @@ public class NukeCommand implements ICommand {
                 TextChannel old = event.getTextChannel();
                 TextChannel copy = old.createCopy().setPosition(old.getPosition()).complete();
                 old.delete().reason("Nuked.").queue();
-                copy.sendMessage(TextHelper.buildSuccess("Nuked channel.")).queue();
+                copy.sendMessage(TextHelper.success("Nuked channel.")).queue();
             } else {
-                event.reply(TextHelper.buildFailure(PermissionHelper.getInvalidPermissionsMessage(Permission.MANAGE_CHANNEL, Permission.MESSAGE_MANAGE))).queue();
+                event.reply(TextHelper.failure(PermissionHelper.getInvalidPermissionsMessage(Permission.MANAGE_CHANNEL, Permission.MESSAGE_MANAGE))).queue();
             }
         } else {
-            event.reply(TextHelper.buildFailure("This command can only be ran in servers!")).queue();
+            event.reply(TextHelper.failure("This command can only be ran in servers!")).queue();
         }
     }
 

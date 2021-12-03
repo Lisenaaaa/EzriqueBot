@@ -14,6 +14,8 @@ import org.apache.logging.log4j.Logger;
 import org.discordbots.api.client.DiscordBotListAPI;
 import xyz.deftu.ezrique.commands.CommandManager;
 import xyz.deftu.ezrique.commands.impl.*;
+import xyz.deftu.ezrique.commands.impl.exclusive.AdminCommand;
+import xyz.deftu.ezrique.commands.impl.exclusive.RestartCommand;
 import xyz.deftu.ezrique.commands.impl.exclusive.testingserver.TestingServerCommand;
 import xyz.deftu.ezrique.commands.impl.TicketCommand;
 import xyz.deftu.ezrique.component.ComponentCreator;
@@ -96,14 +98,17 @@ public class Ezrique extends Thread {
         commandManager.addCommand(new EmojiCommand());
         commandManager.addCommand(new HelpCommand());
         commandManager.addCommand(new KickCommand());
+        commandManager.addCommand(new LeaderboardCommand());
         commandManager.addCommand(new LeaveMessageCommand());
         commandManager.addCommand(new LinksCommand());
         commandManager.addCommand(new NukeCommand());
-        commandManager.addCommand(new RestartCommand());
+        commandManager.addCommand(new PublicityCommand());
         commandManager.addCommand(new StatisticsCommand());
         commandManager.addCommand(new TicketCommand());
         commandManager.addCommand(new WelcomeMessageCommand());
 
+        commandManager.addCommand(new AdminCommand());
+        commandManager.addCommand(new RestartCommand());
         commandManager.addCommand(new TestingServerCommand());
         commandManager.initialize(api);
 

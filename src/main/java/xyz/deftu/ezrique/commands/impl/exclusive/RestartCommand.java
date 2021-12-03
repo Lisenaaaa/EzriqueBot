@@ -1,10 +1,11 @@
-package xyz.deftu.ezrique.commands.impl;
+package xyz.deftu.ezrique.commands.impl.exclusive;
 
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import xyz.deftu.ezrique.Bootstrap;
 import xyz.deftu.ezrique.Ezrique;
 import xyz.deftu.ezrique.commands.ICommand;
+import xyz.deftu.ezrique.util.TextHelper;
 
 public class RestartCommand implements ICommand {
 
@@ -17,7 +18,7 @@ public class RestartCommand implements ICommand {
             event.deferReply().complete().deleteOriginal().queue();
             Bootstrap.restart();
         } else {
-            event.reply("Only the bot owner can use this command!").queue();
+            event.reply(TextHelper.failure("Only the bot owner can use this command!")).queue();
         }
     }
 

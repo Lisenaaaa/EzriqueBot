@@ -68,13 +68,13 @@ public class WelcomeMessageCommand implements ICommand {
                 }
 
                 event.reply(reply == null ?
-                        new MessageBuilder(TextHelper.buildSuccess("Welcome messages are " + (toggle ? "on" : "off") + "," +
+                        new MessageBuilder(TextHelper.success("Welcome messages are " + (toggle ? "on" : "off") + "," +
                                 " sent to " + (channel == null ? "none" : channel.getAsMention()) + " and " +
                                 "the messages will be \"" + message + "\"."))
                                 .build() :
                         reply).setEphemeral(true).queue();
             } else {
-                event.reply(TextHelper.buildFailure(PermissionHelper.getInvalidPermissionsMessage(Permission.MANAGE_SERVER))).queue();
+                event.reply(TextHelper.failure(PermissionHelper.getInvalidPermissionsMessage(Permission.MANAGE_SERVER))).queue();
             }
         } else {
             event.reply("This command can only be used in servers.").queue();

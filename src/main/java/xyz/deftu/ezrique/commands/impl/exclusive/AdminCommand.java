@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Invite;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -50,6 +51,8 @@ public class AdminCommand implements ICommand {
     }
 
     private void handleGuildSearch(Ezrique instance, SlashCommandEvent event, SearchType type, String identifier) {
+        InteractionHook interaction = event.deferReply().complete();
+
         JDA api = event.getJDA();
         List<Guild> guilds = api.getGuilds().stream().filter(new GuildSearchPredicate(type, identifier)).collect(Collectors.toList());
 
@@ -61,11 +64,14 @@ public class AdminCommand implements ICommand {
                 break;
             }
 
-            Invite invite = null;
-            if (guild.getDefaultChannel() != null) {
-                invite = guild.getDefaultChannel().createInvite().complete();
-            } else if (guild.getSystemChannel() != null) {
-                invite = guild.getSystemChannel().createInvite().complete();
+            String invite = null;
+            try {
+                if (guild.getDefaultChannel() != null) {
+                    invite = guild.getDefaultChannel().createInvite().complete().getUrl();
+                } else if (guild.getSystemChannel() != null) {
+                    invite = guild.getSystemChannel().createInvite().complete().getUrl();
+                }
+            } catch (Exception ignored) {
             }
 
             if (index > 0) {
@@ -84,7 +90,7 @@ public class AdminCommand implements ICommand {
             embedBuilder.appendDescription("**");
         }
 
-        event.reply(new MessageBuilder()
+        interaction.editOriginal(new MessageBuilder()
                 .setEmbeds(embedBuilder.build())
                 .build()).queue();
     }

@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import xyz.deftu.ezrique.Ezrique;
 import xyz.deftu.ezrique.EzriqueInfo;
@@ -16,6 +17,7 @@ public class StatisticsCommand implements ICommand {
     }
 
     public void execute(Ezrique instance, SlashCommandEvent event) {
+        InteractionHook interaction = event.deferReply().complete();
         EmbedBuilder embedBuilder = instance.getComponentCreator().createEmbed(event.getJDA());
 
         embedBuilder.addField("Bot", retrieveBotStatistics(instance), false);
@@ -24,7 +26,9 @@ public class StatisticsCommand implements ICommand {
             embedBuilder.addField("Shard " + shard.getShardInfo().getShardId(), retrieveShardInfo(instance, shard), false);
         }
 
-        event.reply(new MessageBuilder().setEmbeds(embedBuilder.build()).build()).queue();
+        interaction.editOriginal(new MessageBuilder()
+                .setEmbeds(embedBuilder.build())
+                .build()).queue();
     }
 
     private String retrieveBotStatistics(Ezrique instance) {

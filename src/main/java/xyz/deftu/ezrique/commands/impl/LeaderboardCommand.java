@@ -5,10 +5,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Invite;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import xyz.deftu.ezrique.Ezrique;
 import xyz.deftu.ezrique.commands.ICommand;
 import xyz.deftu.ezrique.config.impl.guild.PublicityConfig;
@@ -26,6 +25,8 @@ public class LeaderboardCommand implements ICommand {
     }
 
     public void execute(Ezrique instance, SlashCommandEvent event) {
+        InteractionHook interaction = event.deferReply().complete();
+
         PublicityConfig publicity = instance.getConfigManager().getGuild().getPublicity();
 
         JDA api = event.getJDA();
@@ -46,12 +47,15 @@ public class LeaderboardCommand implements ICommand {
                 boolean inviteToggle = publicity.isInvite(guild.getId());
                 Invite invite = null;
                 if (inviteToggle) {
-                    if (guild.getDefaultChannel() != null) {
-                        invite = guild.getDefaultChannel().createInvite().complete();
-                    } else if (guild.getSystemChannel() != null) {
-                        invite = guild.getSystemChannel().createInvite().complete();
-                    } else {
-                        inviteToggle = false;
+                    try {
+                        if (guild.getDefaultChannel() != null) {
+                            invite = guild.getDefaultChannel().createInvite().complete();
+                        } else if (guild.getSystemChannel() != null) {
+                            invite = guild.getSystemChannel().createInvite().complete();
+                        } else {
+                            inviteToggle = false;
+                        }
+                    } catch (Exception ignored) {
                     }
                 }
 
@@ -73,7 +77,7 @@ public class LeaderboardCommand implements ICommand {
             }
         }
 
-        event.reply(new MessageBuilder()
+        interaction.editOriginal(new MessageBuilder()
                 .setEmbeds(embedBuilder.build())
                 .build()).queue();
     }

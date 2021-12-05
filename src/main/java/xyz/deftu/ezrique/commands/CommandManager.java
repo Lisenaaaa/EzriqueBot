@@ -10,8 +10,8 @@ import net.dv8tion.jda.api.sharding.ShardManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import xyz.deftu.deftils.Lists;
 import xyz.deftu.ezrique.Ezrique;
-import xyz.qalcyo.mango.Lists;
 
 import java.util.*;
 

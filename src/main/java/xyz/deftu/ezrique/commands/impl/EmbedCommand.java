@@ -9,12 +9,12 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import xyz.deftu.ezrique.Ezrique;
 import xyz.deftu.ezrique.commands.ICommand;
 import xyz.deftu.ezrique.util.PermissionHelper;
 import xyz.deftu.ezrique.util.TextHelper;
-import xyz.qalcyo.mango.IO;
 
 import java.awt.*;
 import java.net.URI;
@@ -43,6 +43,7 @@ public class EmbedCommand implements ICommand {
                         if (domain != null) {
                             domain = domain.toLowerCase();
                             if (domain.contains("hst.sh")) {
+                                url = convertRaw(url);
                                 String content = getContent(url);
                                 if (content != null) {
                                     DataObject data;
@@ -118,12 +119,21 @@ public class EmbedCommand implements ICommand {
         return domain.startsWith("www.") ? domain.substring(4) : domain;
     }
 
+    private String convertRaw(String original) {
+        if (!original.contains("raw")) {
+            String identifier = original.substring(original.lastIndexOf("/"));
+            return "https://hst.sh/raw" + identifier;
+        } else {
+            return original;
+        }
+    }
+
     private String getContent(String input) {
         try {
             URL url = new URL(input);
             URLConnection connection = url.openConnection();
             connection.setRequestProperty("User-Agent", "Ezrique (Mozilla Firefox)");
-            List<String> lines = IO.readLines(connection.getInputStream(), StandardCharsets.UTF_8);
+            List<String> lines = IOUtils.readLines(connection.getInputStream(), StandardCharsets.UTF_8);
             StringBuilder builder = new StringBuilder();
             lines.forEach(builder::append);
             return builder.toString();

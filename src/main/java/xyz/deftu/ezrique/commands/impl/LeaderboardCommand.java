@@ -72,6 +72,7 @@ public class LeaderboardCommand implements ICommand {
                     embedBuilder.appendDescription(invite.getUrl());
                     embedBuilder.appendDescription(")");
                 }
+
                 embedBuilder.appendDescription("** - ");
                 embedBuilder.appendDescription(NumberFormat.getInstance().format(guild.getMemberCount()));
             }

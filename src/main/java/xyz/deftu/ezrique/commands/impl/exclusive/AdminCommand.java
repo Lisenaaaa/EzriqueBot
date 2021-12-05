@@ -4,19 +4,17 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Invite;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import xyz.deftu.deftils.Strings;
 import xyz.deftu.ezrique.Ezrique;
 import xyz.deftu.ezrique.commands.ICommand;
 import xyz.deftu.ezrique.util.TextHelper;
-import xyz.qalcyo.mango.Strings;
 
-import java.text.NumberFormat;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -84,7 +82,7 @@ public class AdminCommand implements ICommand {
             embedBuilder.appendDescription(invite != null ? "]" : "");
             if (invite != null) {
                 embedBuilder.appendDescription("(");
-                embedBuilder.appendDescription(invite.getUrl());
+                embedBuilder.appendDescription(invite);
                 embedBuilder.appendDescription(")");
             }
             embedBuilder.appendDescription("**");

@@ -16,6 +16,10 @@ buildConfig {
 
 repositories {
     mavenCentral()
+    mavenLocal()
+    maven {
+        url = 'https://s01.oss.sonatype.org/content/repositories/releases/'
+    }
 
     maven {
         name = 'Dv8tion'
@@ -24,12 +28,6 @@ repositories {
     maven {
         name = 'JitPack'
         url = 'https://jitpack.io/'
-    }
-
-    maven {
-        name = 'Qalcyo'
-        url = 'http://maven.deftu.xyz/repository/maven-public/'
-        allowInsecureProtocol = true
     }
 }
 
@@ -42,19 +40,12 @@ dependencies {
     shade('net.dv8tion:JDA:5.0.0-alpha.1')
     shade('org.mongodb:mongodb-driver-sync:4.4.0')
 
+    shade('xyz.deftu.deftils:Deftils:1.1.0')
     shade('org.apache.commons:commons-lang3:3.12.0')
+    shade('commons-io:commons-io:2.11.0')
     shade('commons-validator:commons-validator:1.7')
 
     shade('com.github.ben-manes.caffeine:caffeine:2.9.2')
-
-    shade('xyz.qalcyo.simpleconfig:SimpleConfig:3.5')
-    shade('xyz.qalcyo.simpleconfig:SimpleConfig:3.5:settings')
-    shade('xyz.qalcyo.json:JSON+:2.12')
-    shade('xyz.qalcyo.json:JSON+:2.12:files')
-    shade('xyz.qalcyo.json:JSON+:2.12:kotlin')
-    shade('xyz.qalcyo.json:JSON+:2.12:serialization')
-    shade('xyz.qalcyo.json:JSON+:2.12:utilities')
-    shade('xyz.qalcyo.mango:Mango:1.8')
 
     shade('org.apache.logging.log4j:log4j-api:2.14.1')
     shade('org.apache.logging.log4j:log4j-core:2.14.1')

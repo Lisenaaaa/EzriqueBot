@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.discordbots.api.client.DiscordBotListAPI;
+import xyz.deftu.deftils.Multithreading;
 import xyz.deftu.ezrique.commands.CommandManager;
 import xyz.deftu.ezrique.commands.impl.*;
 import xyz.deftu.ezrique.commands.impl.exclusive.AdminCommand;
@@ -25,9 +26,6 @@ import xyz.deftu.ezrique.features.ErrorHandler;
 import xyz.deftu.ezrique.listeners.*;
 import xyz.deftu.ezrique.listeners.TicketMenuListener;
 import xyz.deftu.ezrique.mongo.MongoConnection;
-import xyz.deftu.ezrique.networking.NetworkManager;
-import xyz.deftu.ezrique.networking.impl.StatsEndpoint;
-import xyz.qalcyo.mango.Multithreading;
 
 import java.time.OffsetDateTime;
 import java.util.concurrent.TimeUnit;
@@ -48,7 +46,6 @@ public class Ezrique extends Thread {
 
     /* External services. */
     private DiscordBotListAPI dbl;
-    private NetworkManager networkManager;
 
     /* User interaction. */
     private CommandManager commandManager;
@@ -86,10 +83,6 @@ public class Ezrique extends Thread {
             dbl.setStats((int) api.getGuildCache().size());
             Multithreading.schedule(() -> dbl.setStats((int) api.getGuildCache().size()), 30, TimeUnit.MINUTES);
         }
-
-        networkManager = new NetworkManager();
-        networkManager.addEndpoint(new StatsEndpoint());
-        networkManager.initialize(4357);
 
         commandManager = new CommandManager();
         commandManager.addCommand(new AutoRoleCommand());
@@ -162,10 +155,6 @@ public class Ezrique extends Thread {
 
     public DiscordBotListAPI getDiscordBotList() {
         return dbl;
-    }
-
-    public NetworkManager getNetworkManager() {
-        return networkManager;
     }
 
     public CommandManager getCommandManager() {

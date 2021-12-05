@@ -1,14 +1,18 @@
 package xyz.deftu.ezrique;
 
-import xyz.qalcyo.json.entities.JsonElement;
-import xyz.qalcyo.simpleconfig.Configuration;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.apache.commons.io.IOUtils;
 
 import java.awt.*;
-import java.io.File;
+import java.io.FileInputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 public class BotMetadata {
 
-    private Configuration configuration;
+    private JsonObject object;
 
     private String token;
     private String mongoUsername;
@@ -22,7 +26,17 @@ public class BotMetadata {
     private String dblToken;
 
     public void initialize() {
-        configuration = new Configuration("metadata", new File("./"));
+        try {
+            List<String> lines = IOUtils.readLines(new FileInputStream("./metadata.json"), StandardCharsets.UTF_8);
+            StringBuilder content = new StringBuilder();
+            for (String line : lines) {
+                content.append(line);
+            }
+
+            object = new JsonParser().parse(content.toString()).getAsJsonObject();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         token = getAndCheck("token").getAsString();
         mongoUsername = getAndCheck("mongo_username").getAsString();
@@ -37,9 +51,9 @@ public class BotMetadata {
     }
 
     private JsonElement getAndCheck(String key) {
-        if (!configuration.hasKey(key))
+        if (!object.has(key))
             throw new IllegalStateException(key + " was not found, but it's required!");
-        return configuration.get(key);
+        return object.get(key);
     }
 
     public String getToken() {
